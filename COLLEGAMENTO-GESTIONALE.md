@@ -1,7 +1,7 @@
 # Collegamento sito ⇄ gestionale OVERSOUND
 
 Il sito legge tutto dal gestionale (https://oversound.pythonanywhere.com) e gli invia gli ordini.
-Serve il **gestionale aggiornamento 25** o successivo.
+Serve il **gestionale aggiornamento 26** o successivo.
 
 ## Cosa si gestisce dal gestionale
 | Cosa | Dove |

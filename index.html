@@ -31,12 +31,12 @@ const normP=(p,V)=>{const v=(V||{})[p.codice]||{},usato=/usat/i.test((p.categori
 const normS=x=>({id:String(x.id),t:x.titolo,x:x.testo,cta:x.cta||'Scopri',tipo:x.tipo==='video'?'video':'foto',media:x.media_url||'',link:x.link||((x.prodotti||[]).length?undefined:'#/catalogo'),rel:x.prodotti||[]});
 const DEMO_MODE=true; /* true = barra "Anteprima" visibile; false al lancio */
 const API_URL='https://oversound.pythonanywhere.com'; /* indirizzo del gestionale; null = solo dati di esempio */
-let COSTO=7.9,PAGAM=[{chiave:'bonifico',tipo:'bonifico',nome:'Bonifico bancario',descrizione:''}],ISTR='';
+let PAGINE=[],COSTO=7.9,PAGAM=[{chiave:'bonifico',tipo:'bonifico',nome:'Bonifico bancario',descrizione:''}],ISTR='';
 const GESTIONALE={baseUrl:new URLSearchParams(location.search).get('api')||API_URL,
  async get(u){const r=await fetch(this.baseUrl+u);if(!r.ok)throw new Error(u);return r.json()},
  async post(u,d){try{const r=await fetch(this.baseUrl+u,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(d)});let j={};try{j=await r.json()}catch(e){}return{...j,ok:r.ok,status:r.status}}catch(e){return{ok:false,errore:'Il negozio non risponde: riprova tra poco.'}}},
  async carica(){const [lista,cfg]=await Promise.all([this.get('/api/lista').catch(()=>this.get('/api/catalogo').then(c=>c.prodotti)),this.get('/api/config')]);
-  const [vet,rec]=await Promise.all([this.get('/api/vetrina').catch(()=>null),this.get('/api/recensioni').catch(()=>[])]);return{lista,cfg,vet,rec}}};
+  const [vet,rec,pag]=await Promise.all([this.get('/api/vetrina').catch(()=>null),this.get('/api/recensioni').catch(()=>[]),this.get('/api/pagine').catch(()=>null)]);return{lista,cfg,vet,rec,pag}}};
 const DEMO=[
  {sku:'CH-001',nome:'Yamaha Pacifica 112V',marca:'Yamaha',categoria:'chitarre',sub:'Elettriche',sub2:'Pacifica',prezzo:289,stato:'nuovo',giacenza:4},
  {sku:'CH-002',nome:'Fender Player Stratocaster',marca:'Fender',categoria:'chitarre',sub:'Elettriche',sub2:'Stratocaster',prezzo:749,stato:'nuovo',giacenza:2},
@@ -163,7 +163,11 @@ function Reviews({p,rev,mine,setMine}){
 const consegna=()=>{const a=d=>{const x=new Date();let n=0;while(n<d){x.setDate(x.getDate()+1);if(x.getDay()%6)n++}return x},t=d=>d.toLocaleDateString('it-IT',{weekday:'short',day:'numeric',month:'short'});return t(a(TEMPI[0]))+' – '+t(a(TEMPI[1]))};
 const INFO={spedizioni:['Spedizioni e resi',['Spediamo in tutta Italia con corriere tracciato.','Reso entro 14 giorni dal ricevimento per gli acquisti online, come previsto per i consumatori.','Testo da completare con tempi e costi reali del negozio.']],
  privacy:['Privacy e cookie',['Questo sito non usa cookie di profilazione.','Salva sul tuo dispositivo solo carrello, preferiti e recensioni inviate.','Testo da completare con l’informativa privacy del negozio.']]};
-const Info=({id})=>{const i=INFO[id];return i?html`<div class="mx-auto max-w-2xl"><h1 class="mb-4 text-3xl font-black">${i[0]}</h1>${i[1].map(t=>html`<p key=${t} class="mb-3 text-zinc-700">${t}</p>`)}</div>`:html`<${NF}/>`};
+const Info=({id})=>{const [p,setP]=useState(null),[ko,setKo]=useState(false),live=!!GESTIONALE.baseUrl&&PAGINE.some(x=>x.slug===id);
+ useEffect(()=>{setP(null);setKo(false);if(live)GESTIONALE.get('/api/pagine/'+encodeURIComponent(id)).then(setP).catch(()=>setKo(true))},[id]);
+ if(live){if(ko)return html`<${NF}/>`;if(!p)return html`<div class="mx-auto max-w-2xl"><div class="h-8 w-1/2 animate-pulse rounded bg-zinc-100"></div></div>`;
+  return html`<div class="mx-auto max-w-2xl"><h1 class="mb-4 text-3xl font-black">${p.titolo}</h1>${String(p.contenuto||'').split(/\n\s*\n/).map((t,k)=>html`<p key=${k} class="mb-3 whitespace-pre-line text-zinc-700">${pulisci(t.trim())}</p>`)}</div>`}
+ const i=INFO[id];return i?html`<div class="mx-auto max-w-2xl"><h1 class="mb-4 text-3xl font-black">${i[0]}</h1>${i[1].map(t=>html`<p key=${t} class="mb-3 text-zinc-700">${t}</p>`)}</div>`:html`<${NF}/>`};
 function Avviso({p}){const [ok,setOk]=useState(()=>ld('os-avvisi',[]).includes(p.sku));
  const inv=async()=>{const e=document.getElementById('av-e').value.trim();if(!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(e))return;if(GESTIONALE.baseUrl){const r=await GESTIONALE.post('/api/avvisi',{email:e,codice:p.sku,sito_web:''});if(!r.ok){alert(r.errore||'Riprova più tardi.');return}}try{localStorage.setItem('os-avvisi',JSON.stringify([...ld('os-avvisi',[]),p.sku]))}catch(e){};setOk(true)};
  return ok?html`<p class="rounded-xl bg-green-50 p-3 text-sm text-green-800">Perfetto, ti avviseremo quando torna disponibile.</p>`:html`<div class="flex gap-2"><input id="av-e" type="email" aria-label="Email" placeholder="La tua email" class="min-w-0 flex-1 rounded-full border border-zinc-300 px-4 py-2 text-sm"/><button onClick=${inv} class="shrink-0 rounded-full bg-zinc-950 px-4 py-2 text-sm font-semibold text-white">Avvisami</button></div>`}
@@ -260,7 +264,7 @@ function App(){
   try{if(!GESTIONALE.baseUrl){p=DEMO.map(x=>({...x}));r=DEMO_REV.map(x=>({...x}))}
    else{const d=await GESTIONALE.carica(),V=(d.vet&&d.vet.vetrina)||{},c=d.cfg||{};p=d.lista.map(x=>normP(x,V));r=(d.rec||[]).map(x=>({...x,sku:x.codice}));
     if(c.spedizione_gratis_sopra!=null)FREE=+c.spedizione_gratis_sopra;if(c.spedizione_costo!=null)COSTO=+c.spedizione_costo;if(Array.isArray(c.metodi)&&c.metodi.length)PAGAM=c.metodi;else if(Array.isArray(c.pagamenti)&&c.pagamenti.length)PAGAM=c.pagamenti.map(k=>({chiave:k,tipo:k,nome:k==='contrassegno'?'Contrassegno (paghi alla consegna)':'Bonifico bancario',descrizione:''}));ISTR=c.bonifico_istruzioni||'';
-    const v=d.vet;if(v){const a=v.azienda||{};Object.assign(AZIENDA,{logo:a.logo||'',wa:a.whatsapp||AZIENDA.wa,email:a.email||AZIENDA.email,indirizzo:a.indirizzo||AZIENDA.indirizzo,piva:a.piva||AZIENDA.piva,orari:(a.orari&&a.orari.length)?a.orari:AZIENDA.orari,social:a.social||{}});
+    if(d.pag&&Array.isArray(d.pag.pagine))PAGINE=d.pag.pagine;const v=d.vet;if(v){const a=v.azienda||{};Object.assign(AZIENDA,{chi:a.chi_siamo||'',logo:a.logo||'',wa:a.whatsapp||AZIENDA.wa,email:a.email||AZIENDA.email,indirizzo:a.indirizzo||AZIENDA.indirizzo,piva:a.piva||AZIENDA.piva,orari:(a.orari&&a.orari.length)?a.orari:AZIENDA.orari,social:a.social||{}});
      if(v.tempi_consegna)TEMPI=v.tempi_consegna;if(v.slide&&v.slide.length)SLIDES.splice(0,SLIDES.length,...v.slide.map(normS))}
     const cs=[...new Set(p.map(x=>x.categoria))].sort((a,b)=>a.localeCompare(b));CATS.splice(0,CATS.length,...cs.map(n=>[n,n,icona(n)]))}}
   catch(e){er=true;p=DEMO.map(x=>({...x}));r=DEMO_REV.map(x=>({...x}))}
@@ -333,8 +337,8 @@ function App(){
   ${page==='servizio'&&html`<${Servizio} id=${arg}/>`}
  </main>
  <footer class="mt-16 bg-zinc-950 text-zinc-300"><div class="mx-auto grid max-w-6xl gap-8 px-4 py-12 md:grid-cols-3">
-  <div><${Logo} foot=${true}/><h2 class="mt-4 font-bold text-white">Chi siamo</h2><p class="mt-2 text-sm">Strumenti musicali, audio e luci, service per eventi e assistenza tecnica.</p><p class="mt-2 text-xs text-zinc-500">${AZIENDA.piva}</p></div>
-  <div class="space-y-3 text-sm"><h2 class="font-bold text-white">Dove siamo</h2><p class="flex gap-2"><${Ic} d=${P.pin} s=${18} c="shrink-0 text-brand"/>${AZIENDA.indirizzo}</p><p class="flex gap-2"><${Ic} d=${P.mail} s=${18} c="shrink-0 text-brand"/>${AZIENDA.email}</p><p class="flex gap-4 pt-2"><a href="#/info/spedizioni" class="underline">Spedizioni e resi</a><a href="#/info/privacy" class="underline">Privacy e cookie</a></p></div>
+  <div><${Logo} foot=${true}/><h2 class="mt-4 font-bold text-white">${PAGINE.some(x=>x.slug==='chi-siamo')?html`<a href="#/info/chi-siamo" class="hover:underline">Chi siamo</a>`:'Chi siamo'}</h2><p class="mt-2 text-sm">${AZIENDA.chi||'Strumenti musicali, audio e luci, service per eventi e assistenza tecnica.'}</p><p class="mt-2 text-xs text-zinc-500">${AZIENDA.piva}</p></div>
+  <div class="space-y-3 text-sm"><h2 class="font-bold text-white">Dove siamo</h2><p class="flex gap-2"><${Ic} d=${P.pin} s=${18} c="shrink-0 text-brand"/>${AZIENDA.indirizzo}</p><p class="flex gap-2"><${Ic} d=${P.mail} s=${18} c="shrink-0 text-brand"/>${AZIENDA.email}</p><p class="flex flex-wrap gap-x-4 gap-y-1 pt-2">${(PAGINE.length?PAGINE.filter(x=>x.slug!=='chi-siamo'):[{slug:'spedizioni',titolo:'Spedizioni e resi'},{slug:'privacy',titolo:'Privacy e cookie'}]).map(x=>html`<a key=${x.slug} href=${'#/info/'+encodeURIComponent(x.slug)} class="underline">${x.titolo}</a>`)}</p></div>
   <div class="text-sm"><h2 class="font-bold text-white">Orari</h2><dl class="mt-3 space-y-1">${AZIENDA.orari.map(([d,o])=>html`<div key=${d} class="flex justify-between gap-4"><dt>${d}</dt><dd>${o}</dd></div>`)}</dl></div></div>
   <div class="border-t border-zinc-800"><div class="mx-auto flex max-w-6xl items-center justify-between px-4 py-4"><span class="text-xs text-zinc-500">© OVERSOUND</span>
    <div class="flex gap-2">${[[P.ig,'Instagram',(AZIENDA.social||{}).instagram||'https://instagram.com/'],[P.fb,'Facebook',(AZIENDA.social||{}).facebook||'https://facebook.com/'],[P.tt,'TikTok',(AZIENDA.social||{}).tiktok||'https://tiktok.com/'],[P.wa,'WhatsApp',wa('Ciao OVERSOUND!')]].map(([d,l,u])=>html`<a key=${l} href=${u} target="_blank" rel="noreferrer" aria-label=${l} class="rounded-full bg-zinc-800 p-2 hover:bg-brand hover:text-white"><${Ic} d=${d} s=${18}/></a>`)}</div></div></div></footer></div>`}
