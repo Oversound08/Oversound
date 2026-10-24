@@ -24,3 +24,4 @@ Contratto completo in `API-GESTIONALE.md`.
 ## Prima del lancio
 Dati reali dell'azienda (numero WhatsApp, indirizzo, P.IVA, orari: sezione `AZIENDA`), foto dei prodotti, testi di spedizioni/resi/privacy,
 pagamenti collegati al gestionale, banner cookie se aggiungi statistiche o pubblicità.
+
