@@ -31,7 +31,7 @@ const normP=(p,V)=>{const v=(V||{})[p.codice]||{},usato=/usat/i.test((p.categori
 const normS=x=>({id:String(x.id),t:x.titolo,x:x.testo,cta:x.cta||'Scopri',tipo:x.tipo==='video'?'video':'foto',media:x.media_url||'',link:x.link||((x.prodotti||[]).length?undefined:'#/catalogo'),rel:x.prodotti||[]});
 const DEMO_MODE=true; /* true = barra "Anteprima" visibile; false al lancio */
 const API_URL='https://oversound.pythonanywhere.com'; /* indirizzo del gestionale; null = solo dati di esempio */
-let COSTO=7.9,PAGAM=['bonifico'],ISTR='';
+let COSTO=7.9,PAGAM=[{chiave:'bonifico',tipo:'bonifico',nome:'Bonifico bancario',descrizione:''}],ISTR='';
 const GESTIONALE={baseUrl:new URLSearchParams(location.search).get('api')||API_URL,
  async get(u){const r=await fetch(this.baseUrl+u);if(!r.ok)throw new Error(u);return r.json()},
  async post(u,d){try{const r=await fetch(this.baseUrl+u,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(d)});let j={};try{j=await r.json()}catch(e){}return{...j,ok:r.ok,status:r.status}}catch(e){return{ok:false,errore:'Il negozio non risponde: riprova tra poco.'}}},
@@ -208,11 +208,10 @@ function Cart({prod,cart,setCart,...r}){const [cod,setCod]=useState(''),[ap,setA
  <h2 class="mb-3 mt-8 text-lg font-bold">Completa il tuo ordine</h2><${Grid} items=${prod.filter(p=>!rows.some(x=>x.p.sku===p.sku)&&p.giacenza>0&&(/access|microf/i.test(p.categoria)||rows.some(x=>x.p.categoria===p.categoria))).slice(0,4)} ...${r}/></div>`}
 function Cassa({prod,cart,setCart}){
  const rows=Object.entries(cart).filter(([,q])=>q>0).map(([k,q])=>({p:prod.find(x=>x.sku===k),q})).filter(r=>r.p),tot=rows.reduce((a,r)=>a+r.p.prezzo*r.q,0),live=!!GESTIONALE.baseUrl;
- const [d,setD]=useState({nome:'',email:'',tel:'',ind:'',cap:'',citta:'',prov:'',note:'',coupon:'',sito_web:''}),[pag,setPag]=useState(PAGAM[0]||'bonifico'),[priv,setPriv]=useState(false),[busy,setBusy]=useState(false),[err,setErr]=useState(''),[ok,setOk]=useState(null);
+ const [d,setD]=useState({nome:'',email:'',tel:'',ind:'',cap:'',citta:'',prov:'',note:'',coupon:'',sito_web:''}),[pag,setPag]=useState((PAGAM[0]||{}).chiave||'bonifico'),[priv,setPriv]=useState(false),[busy,setBusy]=useState(false),[err,setErr]=useState(''),[ok,setOk]=useState(null);
  const set=k=>e=>setD({...d,[k]:e.target.value}),inp='w-full rounded-lg border border-zinc-300 bg-white px-3 py-2 text-sm',lab='mb-1 block text-xs font-semibold text-zinc-600';
- const NOMI={bonifico:'Bonifico bancario',contrassegno:'Contrassegno (paghi alla consegna)'};
  if(ok)return html`<div class="mx-auto max-w-xl py-10 text-center"><${Ic} d=${P.ck} s=${48} c="mx-auto text-green-700"/><h1 class="mt-3 text-2xl font-black">Ordine ricevuto!</h1><p class="mt-2 text-zinc-700">Numero ordine <strong>${ok.numero}</strong> · Totale <strong>${eur(+ok.totale||0)}</strong></p>
-  ${ok.pagamento==='bonifico'?html`<div class="mt-4 rounded-xl bg-zinc-50 p-4 text-left text-sm"><p class="font-semibold">Come pagare con bonifico</p>${ok.iban&&html`<p class="mt-1">IBAN: <strong>${ok.iban}</strong></p>`}<p>Causale: ordine ${ok.numero}</p>${ok.istruzioni_bonifico&&html`<p class="mt-1 whitespace-pre-line">${ok.istruzioni_bonifico}</p>`}<p class="mt-2 text-zinc-600">L’ordine viene preparato dopo la ricezione del pagamento.</p></div>`:html`<p class="mt-4 rounded-xl bg-zinc-50 p-4 text-sm">Pagherai al corriere alla consegna.</p>`}
+  ${ok.pagamento==='bonifico'?html`<div class="mt-4 rounded-xl bg-zinc-50 p-4 text-left text-sm"><p class="font-semibold">Come pagare con bonifico</p>${ok.iban&&html`<p class="mt-1">IBAN: <strong>${ok.iban}</strong></p>`}<p>Causale: ordine ${ok.numero}</p>${ok.istruzioni_bonifico&&html`<p class="mt-1 whitespace-pre-line">${ok.istruzioni_bonifico}</p>`}<p class="mt-2 text-zinc-600">L’ordine viene preparato dopo la ricezione del pagamento.</p></div>`:ok.tipo==='manuale'?html`<div class="mt-4 rounded-xl bg-zinc-50 p-4 text-left text-sm"><p class="font-semibold">Pagamento con ${ok.metodo}</p>${ok.istruzioni&&html`<p class="mt-1 whitespace-pre-line">${ok.istruzioni}</p>`}<p class="mt-2 text-zinc-600">Indica il numero ordine ${ok.numero}. L’ordine viene preparato dopo la ricezione del pagamento.</p></div>`:html`<p class="mt-4 rounded-xl bg-zinc-50 p-4 text-sm">Pagherai al corriere alla consegna.</p>`}
   <p class="mt-4 text-sm text-zinc-600">Conserva il numero ordine: ti servirà per qualsiasi domanda.</p><a href="#/" class="mt-4 inline-block rounded-full bg-brand px-6 py-3 font-semibold text-white">Torna al negozio</a></div>`;
  if(!rows.length)return html`<div class="py-16 text-center"><h1 class="text-2xl font-bold">Il carrello è vuoto</h1><a href="#/catalogo" class="mt-2 inline-block font-semibold text-brand">Vai al catalogo</a></div>`;
  const sped=tot>=FREE?0:COSTO;
@@ -224,14 +223,14 @@ function Cassa({prod,cart,setCart}){
   if(!priv)return setErr('Per inviare l’ordine devi accettare l’informativa privacy.');
   setBusy(true);
   if(!live){await new Promise(r=>setTimeout(r,500));setBusy(false);setOk({numero:'DEMO-0001',totale:tot+sped,pagamento:pag,iban:'IT00 X000 0000 0000 0000 0000 000',istruzioni_bonifico:'Anteprima: nessun ordine è stato inviato.'});setCart({});return}
-  const r=await GESTIONALE.post('/api/ordini',{cliente:{nome:d.nome.trim(),email:e,tel:d.tel.trim(),ind:d.ind.trim(),cap:d.cap.trim(),citta:d.citta.trim(),prov:d.prov.trim().toUpperCase()},pagamento:pag,righe:rows.map(x=>({codice:x.p.sku,quantita:x.q})),coupon:d.coupon.trim(),note:d.note,sito_web:d.sito_web});
-  setBusy(false);if(r.ok){setOk(r);setCart({})}else setErr(r.errore||'Non è stato possibile inviare l’ordine: riprova o scrivici su WhatsApp.')};
+  const r=await GESTIONALE.post('/api/ordini',{cliente:{nome:d.nome.trim(),email:e,tel:d.tel.trim(),ind:d.ind.trim(),cap:d.cap.trim(),citta:d.citta.trim(),prov:d.prov.trim().toUpperCase()},pagamento:pag,ritorno:location.origin+location.pathname,righe:rows.map(x=>({codice:x.p.sku,quantita:x.q})),coupon:d.coupon.trim(),note:d.note,sito_web:d.sito_web});
+  if(r.ok&&r.pagamento_url){location.href=r.pagamento_url;return}setBusy(false);if(r.ok){setOk(r);setCart({})}else setErr(r.errore||'Non è stato possibile inviare l’ordine: riprova o scrivici su WhatsApp.')};
  return html`<div class="mx-auto max-w-3xl"><h1 class="mb-4 text-2xl font-bold">Completa l’ordine</h1><div class="grid gap-6 md:grid-cols-[1fr_260px]"><div class="space-y-3">
   <div><label class=${lab}>Nome e cognome *</label><input class=${inp} value=${d.nome} onInput=${set('nome')} autocomplete="name"/></div>
   <div class="grid gap-3 sm:grid-cols-2"><div><label class=${lab}>Email *</label><input class=${inp} type="email" value=${d.email} onInput=${set('email')} autocomplete="email"/></div><div><label class=${lab}>Telefono</label><input class=${inp} type="tel" value=${d.tel} onInput=${set('tel')} autocomplete="tel"/></div></div>
   <div><label class=${lab}>Indirizzo di consegna *</label><input class=${inp} value=${d.ind} onInput=${set('ind')} autocomplete="street-address"/></div>
   <div class="grid grid-cols-3 gap-3"><div><label class=${lab}>CAP *</label><input class=${inp} inputmode="numeric" maxlength="5" value=${d.cap} onInput=${set('cap')}/></div><div><label class=${lab}>Città *</label><input class=${inp} value=${d.citta} onInput=${set('citta')}/></div><div><label class=${lab}>Prov. *</label><input class=${inp} maxlength="2" value=${d.prov} onInput=${set('prov')}/></div></div>
-  <div><label class=${lab}>Pagamento</label><div class="space-y-2">${(PAGAM.length?PAGAM:['bonifico']).map(k=>html`<label key=${k} class="flex items-center gap-2 rounded-lg border border-zinc-300 p-3 text-sm"><input type="radio" name="pag" checked=${pag===k} onChange=${()=>setPag(k)}/>${NOMI[k]||k}</label>`)}</div></div>
+  <div><label class=${lab}>Pagamento</label><div class="space-y-2">${PAGAM.map(m=>html`<label key=${m.chiave} class="flex items-start gap-2 rounded-lg border border-zinc-300 p-3 text-sm"><input type="radio" name="pag" class="mt-0.5" checked=${pag===m.chiave} onChange=${()=>setPag(m.chiave)}/><span><strong>${m.nome}</strong>${m.descrizione&&html`<span class="block text-xs text-zinc-500">${m.descrizione}</span>`}</span></label>`)}</div></div>
   ${live&&html`<div><label class=${lab}>Codice sconto</label><input class=${inp} value=${d.coupon} onInput=${set('coupon')} placeholder="Facoltativo"/></div>`}
   <div><label class=${lab}>Note per la consegna</label><textarea class=${inp} rows="2" value=${d.note} onInput=${set('note')}></textarea></div>
   <input aria-hidden="true" tabindex="-1" autocomplete="off" value=${d.sito_web} onInput=${set('sito_web')} style=${{position:'absolute',left:'-9999px',height:0,opacity:0}}/>
@@ -240,6 +239,15 @@ function Cassa({prod,cart,setCart}){
   <button disabled=${busy} onClick=${invia} class="w-full rounded-full bg-brand px-6 py-3 font-semibold text-white hover:bg-brand2 disabled:bg-zinc-300">${busy?'Invio in corso…':'Conferma l’ordine'}</button></div>
   <aside class="h-fit rounded-xl bg-zinc-50 p-4 text-sm"><h2 class="mb-2 font-bold">Riepilogo</h2><ul class="space-y-1">${rows.map(({p,q})=>html`<li key=${p.sku} class="flex justify-between gap-2"><span class="truncate">${q} × ${p.nome}</span><span>${eur(p.prezzo*q)}</span></li>`)}</ul>
   <div class="mt-3 flex justify-between border-t border-zinc-200 pt-2"><span>Spedizione</span><span>${sped?eur(sped):'Gratuita'}</span></div><div class="mt-1 flex justify-between text-lg font-bold"><span>Totale</span><span>${eur(tot+sped)}</span></div>${live&&html`<p class="mt-2 text-xs text-zinc-500">Il totale definitivo, con l’eventuale sconto, lo calcola il negozio.</p>`}<a href="#/carrello" class="mt-3 inline-block text-xs underline">Modifica il carrello</a></aside></div></div>`}
+function Ordine({num,t,setCart}){
+ const [r,setR]=useState(null),[n,setN]=useState(0);
+ useEffect(()=>{let vivo=true;if(!GESTIONALE.baseUrl){setR({pagato:true,numero:num,totale:0});return}
+  GESTIONALE.get('/api/pagamento/'+encodeURIComponent(num)+'?t='+encodeURIComponent(t||'')).then(j=>{if(vivo){setR(j);if(j.pagato)setCart({})}}).catch(()=>vivo&&setR({errore:true}));return()=>{vivo=false}},[num,t,n]);
+ const box='mx-auto max-w-xl py-10 text-center';
+ if(!r)return html`<div class=${box}><p class="text-zinc-600">Controllo il pagamento…</p></div>`;
+ if(r.errore)return html`<div class=${box}><h1 class="text-2xl font-black">Ordine non trovato</h1><p class="mt-2 text-zinc-600">Il collegamento non è valido. Se hai pagato, scrivici su WhatsApp indicando il numero ordine ${num}.</p><a href="#/" class="mt-4 inline-block font-semibold text-brand">Torna al negozio</a></div>`;
+ if(r.pagato)return html`<div class=${box}><${Ic} d=${P.ck} s=${48} c="mx-auto text-green-700"/><h1 class="mt-3 text-2xl font-black">Pagamento ricevuto, grazie!</h1><p class="mt-2 text-zinc-700">Ordine <strong>${r.numero}</strong>${r.totale?html` · Totale <strong>${eur(+r.totale)}</strong>`:''}</p><p class="mt-2 text-sm text-zinc-600">Prepariamo la spedizione. Conserva il numero ordine per qualsiasi domanda.</p><a href="#/" class="mt-4 inline-block rounded-full bg-brand px-6 py-3 font-semibold text-white">Torna al negozio</a></div>`;
+ return html`<div class=${box}><h1 class="text-2xl font-black">Stiamo aspettando la conferma</h1><p class="mt-2 text-zinc-700">Ordine <strong>${r.numero}</strong>: il pagamento non risulta ancora arrivato. Può servire qualche istante.</p><button onClick=${()=>setN(n+1)} class="mt-4 rounded-full bg-brand px-6 py-3 font-semibold text-white">Controlla di nuovo</button></div>`}
 function App(){
  const [h,setH]=useState(location.hash.slice(1)||'/');useEffect(()=>{const f=()=>{setH(location.hash.slice(1)||'/');scrollTo(0,0)};addEventListener('hashchange',f);return()=>removeEventListener('hashchange',f)},[]);
  const [path,qs]=h.split('?');const [page,arg0]=path.split('/').filter(Boolean),arg=arg0?decodeURIComponent(arg0):arg0;const params=new URLSearchParams(qs);
@@ -247,7 +255,7 @@ function App(){
  const load=async()=>{setProd(null);let p,r,er=false;
   try{if(!GESTIONALE.baseUrl){p=DEMO.map(x=>({...x}));r=DEMO_REV.map(x=>({...x}))}
    else{const d=await GESTIONALE.carica(),V=(d.vet&&d.vet.vetrina)||{},c=d.cfg||{};p=d.lista.map(x=>normP(x,V));r=(d.rec||[]).map(x=>({...x,sku:x.codice}));
-    if(c.spedizione_gratis_sopra!=null)FREE=+c.spedizione_gratis_sopra;if(c.spedizione_costo!=null)COSTO=+c.spedizione_costo;PAGAM=c.pagamenti||PAGAM;ISTR=c.bonifico_istruzioni||'';
+    if(c.spedizione_gratis_sopra!=null)FREE=+c.spedizione_gratis_sopra;if(c.spedizione_costo!=null)COSTO=+c.spedizione_costo;if(Array.isArray(c.metodi)&&c.metodi.length)PAGAM=c.metodi;else if(Array.isArray(c.pagamenti)&&c.pagamenti.length)PAGAM=c.pagamenti.map(k=>({chiave:k,tipo:k,nome:k==='contrassegno'?'Contrassegno (paghi alla consegna)':'Bonifico bancario',descrizione:''}));ISTR=c.bonifico_istruzioni||'';
     const v=d.vet;if(v){const a=v.azienda||{};Object.assign(AZIENDA,{wa:a.whatsapp||AZIENDA.wa,email:a.email||AZIENDA.email,indirizzo:a.indirizzo||AZIENDA.indirizzo,piva:a.piva||AZIENDA.piva,orari:(a.orari&&a.orari.length)?a.orari:AZIENDA.orari,social:a.social||{}});
      if(v.tempi_consegna)TEMPI=v.tempi_consegna;if(v.slide&&v.slide.length)SLIDES.splice(0,SLIDES.length,...v.slide.map(normS))}
     const cs=[...new Set(p.map(x=>x.categoria))].sort((a,b)=>a.localeCompare(b));CATS.splice(0,CATS.length,...cs.map(n=>[n,n,icona(n)]))}}
@@ -315,6 +323,7 @@ function App(){
   ${prod&&page==='preferiti'&&html`<h1 class="mb-4 text-2xl font-bold">Preferiti</h1>${favs.length?html`<${Grid} items=${prod.filter(p=>favs.includes(p.sku))} ...${sh}/>`:html`<p class="rounded-xl bg-zinc-50 p-8 text-center text-zinc-600">Nessun preferito: tocca il cuore sui prodotti per salvarli qui.</p>`}`}
   ${prod&&page==='consigli'&&html`<${Trova} prod=${prod} ...${sh}/>`}
   ${page==='info'&&html`<${Info} id=${arg}/>`}
+  ${page==='ordine'&&arg&&html`<${Ordine} num=${arg} t=${params.get('t')} setCart=${setCart}/>`}
   ${page==='servizio'&&html`<${Servizio} id=${arg}/>`}
  </main>
  <footer class="mt-16 bg-zinc-950 text-zinc-300"><div class="mx-auto grid max-w-6xl gap-8 px-4 py-12 md:grid-cols-3">
