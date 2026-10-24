@@ -66,7 +66,7 @@ const DEMO_REV=[
 const OFF={'CH-002':799,'AU-001':599,'LU-001':199};DEMO.forEach(p=>{p.evidenza=['CH-002','TA-001','AU-001','MI-002','LU-001','CH-001'].includes(p.sku);if(OFF[p.sku])p.prezzoPrima=OFF[p.sku]});
 let FREE=199,TEMPI=[2,4];const COUPON={OVERSOUND10:10}; /* soglia spedizione gratuita: esempio, da decidere */
 const TRUST=[[P_TRUCK,'Spedizione in Italia','Imballi sicuri per strumenti delicati'],[P_SHIELD,'Pagamenti sicuri','Carta, PayPal o bonifico'],[P_TOOL,'Assistenza tecnica','Riparazioni e consigli dal negozio'],[P_CERT,'Usato garantito','Strumenti controllati dai nostri tecnici']];
-const AZIENDA={wa:'390000000000',email:'info@oversound.it',indirizzo:'Via Esempio 1, 00000 Città (XX)',piva:'P.IVA 00000000000',
+const AZIENDA={logo:'',wa:'390000000000',email:'info@oversound.it',indirizzo:'Via Esempio 1, 00000 Città (XX)',piva:'P.IVA 00000000000',
  orari:[['Lun – Ven','9:00–13:00 / 15:30–19:30'],['Sabato','9:00–13:00'],['Domenica','Chiuso']]};
 const CATS=[['chitarre','Chitarre','M14 4l6 6M4 20l7-7m-2-2l5 5M15 3l6 6-3 3-6-6z'],['tastiere','Tastiere','M3 6h18v12H3zM8 6v7M12 6v7M16 6v7'],
  ['audio','Audio','M6 3h12v18H6zM12 8h.01M12 16a3 3 0 100-.01'],['luci','Luci','M9 18h6M10 22h4M12 2a7 7 0 00-4 12.7c.6.5 1 1.3 1 2.3h6c0-1 .4-1.8 1-2.3A7 7 0 0012 2z'],
@@ -249,6 +249,9 @@ function Ordine({num,t,setCart}){
  if(r.pagato)return html`<div class=${box}><${Ic} d=${P.ck} s=${48} c="mx-auto text-green-700"/><h1 class="mt-3 text-2xl font-black">Pagamento ricevuto, grazie!</h1><p class="mt-2 text-zinc-700">Ordine <strong>${r.numero}</strong>${r.totale?html` · Totale <strong>${eur(+r.totale)}</strong>`:''}</p><p class="mt-2 text-sm text-zinc-600">Prepariamo la spedizione. Conserva il numero ordine per qualsiasi domanda.</p><a href="#/" class="mt-4 inline-block rounded-full bg-brand px-6 py-3 font-semibold text-white">Torna al negozio</a></div>`;
  return html`<div class=${box}><h1 class="text-2xl font-black">Stiamo aspettando la conferma</h1><p class="mt-2 text-zinc-700">Ordine <strong>${r.numero}</strong>: il pagamento non risulta ancora arrivato. Può servire qualche istante.</p><button onClick=${()=>setN(n+1)} class="mt-4 rounded-full bg-brand px-6 py-3 font-semibold text-white">Controlla di nuovo</button></div>`}
 const SubChip=(on,fn,t)=>html`<button key=${t} onClick=${fn} class=${'shrink-0 rounded-full border px-3 py-1.5 text-sm font-semibold '+(on?'border-brand bg-brand text-white':'border-zinc-300 text-zinc-700 hover:border-brand')}>${t}</button>`;
+function Logo({foot}){const [ko,setKo]=useState(false);
+ if(AZIENDA.logo&&!ko)return html`<img src=${AZIENDA.logo} alt="OVERSOUND" onError=${()=>setKo(true)} class=${foot?'h-12 w-auto max-w-[200px] rounded-lg bg-white p-1.5':'h-10 w-auto max-w-[190px] object-contain'}/>`;
+ return html`<span class=${'text-2xl font-black tracking-tight'+(foot?' text-white':'')}>OVER<span class="text-brand">SOUND</span></span>`}
 function App(){
  const [h,setH]=useState(location.hash.slice(1)||'/');useEffect(()=>{const f=()=>{setH(location.hash.slice(1)||'/');scrollTo(0,0)};addEventListener('hashchange',f);return()=>removeEventListener('hashchange',f)},[]);
  const [path,qs]=h.split('?');const [page,arg0]=path.split('/').filter(Boolean),arg=arg0?decodeURIComponent(arg0):arg0;const params=new URLSearchParams(qs);
@@ -257,7 +260,7 @@ function App(){
   try{if(!GESTIONALE.baseUrl){p=DEMO.map(x=>({...x}));r=DEMO_REV.map(x=>({...x}))}
    else{const d=await GESTIONALE.carica(),V=(d.vet&&d.vet.vetrina)||{},c=d.cfg||{};p=d.lista.map(x=>normP(x,V));r=(d.rec||[]).map(x=>({...x,sku:x.codice}));
     if(c.spedizione_gratis_sopra!=null)FREE=+c.spedizione_gratis_sopra;if(c.spedizione_costo!=null)COSTO=+c.spedizione_costo;if(Array.isArray(c.metodi)&&c.metodi.length)PAGAM=c.metodi;else if(Array.isArray(c.pagamenti)&&c.pagamenti.length)PAGAM=c.pagamenti.map(k=>({chiave:k,tipo:k,nome:k==='contrassegno'?'Contrassegno (paghi alla consegna)':'Bonifico bancario',descrizione:''}));ISTR=c.bonifico_istruzioni||'';
-    const v=d.vet;if(v){const a=v.azienda||{};Object.assign(AZIENDA,{wa:a.whatsapp||AZIENDA.wa,email:a.email||AZIENDA.email,indirizzo:a.indirizzo||AZIENDA.indirizzo,piva:a.piva||AZIENDA.piva,orari:(a.orari&&a.orari.length)?a.orari:AZIENDA.orari,social:a.social||{}});
+    const v=d.vet;if(v){const a=v.azienda||{};Object.assign(AZIENDA,{logo:a.logo||'',wa:a.whatsapp||AZIENDA.wa,email:a.email||AZIENDA.email,indirizzo:a.indirizzo||AZIENDA.indirizzo,piva:a.piva||AZIENDA.piva,orari:(a.orari&&a.orari.length)?a.orari:AZIENDA.orari,social:a.social||{}});
      if(v.tempi_consegna)TEMPI=v.tempi_consegna;if(v.slide&&v.slide.length)SLIDES.splice(0,SLIDES.length,...v.slide.map(normS))}
     const cs=[...new Set(p.map(x=>x.categoria))].sort((a,b)=>a.localeCompare(b));CATS.splice(0,CATS.length,...cs.map(n=>[n,n,icona(n)]))}}
   catch(e){er=true;p=DEMO.map(x=>({...x}));r=DEMO_REV.map(x=>({...x}))}
@@ -287,7 +290,7 @@ function App(){
  <a href=${wa('Ciao OVERSOUND, ho bisogno di aiuto!')} target="_blank" rel="noreferrer" aria-label="Scrivici su WhatsApp" class="fixed bottom-4 right-4 z-40 grid h-14 w-14 place-items-center rounded-full bg-[#25D366] text-white shadow-lg transition hover:scale-105 max-md:bottom-24"><${Ic} d=${P.wa} s=${28}/></a>
  ${toast&&html`<div role="status" class="fixed inset-x-0 bottom-20 z-50 mx-auto flex w-[92%] max-w-md items-center justify-between gap-3 rounded-full bg-zinc-950 px-5 py-3 text-sm text-white shadow-lg md:bottom-4"><span class="truncate">Aggiunto: ${toast}</span><a href="#/carrello" class="shrink-0 font-semibold underline">Vai al carrello</a></div>`}
  <header class="sticky top-0 z-30 border-b border-zinc-200 bg-white"><div class="mx-auto max-w-6xl px-4">
-  <div class="flex flex-wrap items-center gap-x-4 gap-y-2 py-3"><a href="#/" class="text-2xl font-black tracking-tight">OVER<span class="text-brand">SOUND</span></a>
+  <div class="flex flex-wrap items-center gap-x-4 gap-y-2 py-3"><a href="#/" aria-label="OVERSOUND, home" class="flex items-center"><${Logo}/></a>
    <div class="relative order-3 flex w-full items-center gap-2 rounded-full border border-zinc-300 px-4 focus-within:border-brand md:order-none md:w-auto md:flex-1"><${Ic} d=${P.search} s=${18} c="text-zinc-500"/>
     <input aria-label="Cerca prodotti" value=${f.q} onInput=${e=>setF({...f,q:e.target.value})} onFocus=${()=>setSug(true)} onBlur=${()=>setTimeout(()=>setSug(false),200)} onKeyDown=${e=>{if(e.key==='Enter'){location.hash='/catalogo';setSug(false)}}} placeholder="Cerca strumenti, marchi, accessori…" class="w-full bg-transparent py-2 text-sm outline-none"/>
     ${sug&&f.q.trim().length>1&&html`<ul class="absolute left-0 right-0 top-full z-40 mt-2 overflow-hidden rounded-2xl border border-zinc-200 bg-white shadow-xl">${prod?prod.filter(p=>(p.nome+p.marca).toLowerCase().includes(f.q.trim().toLowerCase())).slice(0,5).map(p=>html`<li key=${p.sku}><a href=${'#/prodotto/'+encodeURIComponent(p.sku)} class="flex items-center justify-between gap-3 px-4 py-2.5 text-sm hover:bg-zinc-50"><span class="truncate">${p.nome}</span><strong>${eur(p.prezzo)}</strong></a></li>`):null}<li><a href="#/catalogo" class="block border-t border-zinc-100 px-4 py-2.5 text-sm font-semibold text-brand">Vedi tutti i risultati</a></li></ul>`}</div>
@@ -330,7 +333,7 @@ function App(){
   ${page==='servizio'&&html`<${Servizio} id=${arg}/>`}
  </main>
  <footer class="mt-16 bg-zinc-950 text-zinc-300"><div class="mx-auto grid max-w-6xl gap-8 px-4 py-12 md:grid-cols-3">
-  <div><div class="text-2xl font-black text-white">OVER<span class="text-brand">SOUND</span></div><h2 class="mt-4 font-bold text-white">Chi siamo</h2><p class="mt-2 text-sm">Strumenti musicali, audio e luci, service per eventi e assistenza tecnica.</p><p class="mt-2 text-xs text-zinc-500">${AZIENDA.piva}</p></div>
+  <div><${Logo} foot=${true}/><h2 class="mt-4 font-bold text-white">Chi siamo</h2><p class="mt-2 text-sm">Strumenti musicali, audio e luci, service per eventi e assistenza tecnica.</p><p class="mt-2 text-xs text-zinc-500">${AZIENDA.piva}</p></div>
   <div class="space-y-3 text-sm"><h2 class="font-bold text-white">Dove siamo</h2><p class="flex gap-2"><${Ic} d=${P.pin} s=${18} c="shrink-0 text-brand"/>${AZIENDA.indirizzo}</p><p class="flex gap-2"><${Ic} d=${P.mail} s=${18} c="shrink-0 text-brand"/>${AZIENDA.email}</p><p class="flex gap-4 pt-2"><a href="#/info/spedizioni" class="underline">Spedizioni e resi</a><a href="#/info/privacy" class="underline">Privacy e cookie</a></p></div>
   <div class="text-sm"><h2 class="font-bold text-white">Orari</h2><dl class="mt-3 space-y-1">${AZIENDA.orari.map(([d,o])=>html`<div key=${d} class="flex justify-between gap-4"><dt>${d}</dt><dd>${o}</dd></div>`)}</dl></div></div>
   <div class="border-t border-zinc-800"><div class="mx-auto flex max-w-6xl items-center justify-between px-4 py-4"><span class="text-xs text-zinc-500">© OVERSOUND</span>
