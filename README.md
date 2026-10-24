@@ -12,7 +12,7 @@ Funziona così com'è su GitHub Pages e su SiteGround.
 > Con il piano gratuito il repository deve essere pubblico: non metterci mai password o chiavi (password, chiavi dei pagamenti restano solo nel gestionale).
 
 ## Collegare il gestionale
-Il sito è già collegato a `https://oversound.pythonanywhere.com` (riga `API_URL` in `index.html`). Serve il gestionale aggiornamento 24 e, nelle sue Impostazioni sito, l'indirizzo `https://oversound08.github.io`. Dettagli in `COLLEGAMENTO-GESTIONALE.md`. Con `API_URL=null` il sito usa solo dati di esempio.
+Il sito è già collegato a `https://oversound.pythonanywhere.com` (riga `API_URL` in `index.html`). Serve il gestionale aggiornamento 25 e, nelle sue Impostazioni sito, l'indirizzo `https://oversound08.github.io`. Dettagli in `COLLEGAMENTO-GESTIONALE.md`. Con `API_URL=null` il sito usa solo dati di esempio.
 
 ## Andare online su SiteGround
 1. Carica `index.html` nella cartella `public_html` (Site Tools → File Manager, oppure FTP).
