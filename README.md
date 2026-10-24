@@ -12,9 +12,7 @@ Funziona così com'è su GitHub Pages e su SiteGround.
 > Con il piano gratuito il repository deve essere pubblico: non metterci mai password o chiavi (password, chiavi dei pagamenti restano solo nel gestionale).
 
 ## Collegare il gestionale
-Contratto completo in `API-GESTIONALE.md`.
-- **Prova sul Mac:** `cd gestionale-demo && pip3 install flask && python3 sito_api.py`; poi, nella cartella del sito, `python3 -m http.server 8000` e apri `http://127.0.0.1:8000/index.html?api=http://127.0.0.1:5000`.
-- **Online:** quando il gestionale ha le API del contratto, in `index.html` scrivi `const API_URL='https://oversound.pythonanywhere.com'`. Finché è `null` il sito usa i dati di esempio. Il gestionale deve consentire l'accesso dal dominio del sito (CORS).
+Il sito è già collegato a `https://oversound.pythonanywhere.com` (riga `API_URL` in `index.html`). Serve il gestionale aggiornamento 23 e, nelle sue Impostazioni sito, l'indirizzo `https://oversound08.github.io`. Dettagli in `COLLEGAMENTO-GESTIONALE.md`. Con `API_URL=null` il sito usa solo dati di esempio.
 
 ## Andare online su SiteGround
 1. Carica `index.html` nella cartella `public_html` (Site Tools → File Manager, oppure FTP).
@@ -23,5 +21,5 @@ Contratto completo in `API-GESTIONALE.md`.
 
 ## Prima del lancio
 Dati reali dell'azienda (numero WhatsApp, indirizzo, P.IVA, orari: sezione `AZIENDA`), foto dei prodotti, testi di spedizioni/resi/privacy,
-pagamenti collegati al gestionale, banner cookie se aggiungi statistiche o pubblicità.
+pagamento con carta, banner cookie se aggiungi statistiche o pubblicità.
 
