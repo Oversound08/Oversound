@@ -1,7 +1,7 @@
 # Collegamento sito ⇄ gestionale OVERSOUND
 
 Il sito legge tutto dal gestionale (https://oversound.pythonanywhere.com) e gli invia gli ordini.
-Serve il **gestionale aggiornamento 33** o successivo (tempi di spedizione, usato, account, varianti, categorie con immagine, filtri).
+Serve il **gestionale aggiornamento 34** o successivo (tempi di spedizione, usato, account, varianti, categorie con immagine, filtri).
 
 ## Cosa si gestisce dal gestionale
 | Cosa | Dove |
@@ -21,6 +21,7 @@ Serve il **gestionale aggiornamento 33** o successivo (tempi di spedizione, usat
 | Nuovo / Usato garantito / Usato / Ricondizionato / Ex demo | Scheda prodotto > Condizione |
 | Varianti (es. stesso modello in colori diversi) | Scheda prodotto > Varianti |
 | Simbolo o immagine e ordine di categorie e sottocategorie | Categorie e marche |
+| Filtri del catalogo (quali, in che ordine, solo in certe categorie) | Sito web > Filtri del sito |
 | Iscritti newsletter e avvisi | Sito web > Iscritti e avvisi |
 
 **Importante:** in Sito web > Impostazioni sito, «Indirizzo del sito» deve essere solo `https://oversound08.github.io`
@@ -28,7 +29,7 @@ Serve il **gestionale aggiornamento 33** o successivo (tempi di spedizione, usat
 Se non coincide il sito non riesce a leggere i dati e mostra i dati di esempio.
 
 ## Indirizzi usati dal sito
-Lettura: `/api/lista`, `/api/prodotto/<slug>`, `/api/config`, `/api/vetrina`, `/api/recensioni`, `/api/categorie`.
+Lettura: `/api/lista`, `/api/prodotto/<slug>`, `/api/config`, `/api/vetrina`, `/api/recensioni`, `/api/categorie`, `/api/filtri`.
 Account: `/api/account/registra`, `accedi`, `recupera`, `io`, `aggiorna`, `password`, `esci` (token salvato solo nel browser del cliente).
 Pagamenti online: `/api/pagamento/<ordine>`, `/api/pagamento/ritorno`, `/api/pagamento/annulla`.
 Invio: `/api/ordini` (prezzi e totale li ricalcola sempre il gestionale), `/api/recensioni`, `/api/newsletter`, `/api/avvisi`.
@@ -37,6 +38,6 @@ Invio: `/api/ordini` (prezzi e totale li ricalcola sempre il gestionale), `/api/
 - «Usato»: lo decide la Condizione nella scheda prodotto (Usato garantito, Usato, Ricondizionato, Ex demo). Con un gestionale vecchio vale ancora la parola «usato» nella categoria.
 - Prezzi sempre con i centesimi (es. 1.299,90 €). Gli ordini del sito sono salvati IVA inclusa: il totale è esattamente quello mostrato.
 - Disponibilità: «Disponibile», «Su ordinazione · 9/16 giorni» (giacenza 0 ma ordinabile, secondo i Tempi di spedizione) o «Esaurito».
-- Le sottocategorie sono riquadri di navigazione in cima al catalogo; i filtri (prezzo, condizione, disponibilità, tempi, marca e caratteristiche tecniche) sono a parte.
+- Le sottocategorie sono riquadri di navigazione in cima al catalogo; i filtri sono a parte. Se in Sito web > Filtri del sito ci sono filtri, il sito mostra quelli (per la categoria aperta, nell'ordine scelto); altrimenti li calcola da solo (prezzo, condizione, disponibilità, tempi, marca e caratteristiche tecniche).
 - I metodi di pagamento mostrati nella cassa sono quelli accesi in Sito web > Pagamenti. Con carta o PayPal il cliente va sulla pagina di pagamento e torna al sito; l'ordine passa da solo a «Da spedire».
 - Nel sito non ci sono password o chiavi: il repository è pubblico.
