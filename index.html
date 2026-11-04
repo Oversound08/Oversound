@@ -112,6 +112,24 @@ a.bg-brand:hover,button.bg-brand:not(:disabled):hover{box-shadow:0 10px 24px -10
 .rounded-2xl{border-radius:22px}
 /* comparsa morbida delle sezioni mentre scorri (solo browser che lo supportano) */
 @supports (animation-timeline:view()){.os-rv{animation:os-in both var(--os-ease);animation-timeline:view();animation-range:entry 0% entry 35%}@keyframes os-in{from{opacity:0;transform:translateY(28px)}to{opacity:1;transform:none}}}
+/* foto prodotto da sfogliare */
+.gal-tr{display:flex;overflow-x:auto;scroll-snap-type:x mandatory;scrollbar-width:none;-webkit-overflow-scrolling:touch;overscroll-behavior-x:contain}.gal-tr::-webkit-scrollbar{display:none}
+.gal-it{flex:0 0 100%;scroll-snap-align:start;scroll-snap-stop:always}
+.gal-b{position:absolute;top:50%;transform:translateY(-50%);display:grid;place-items:center;width:40px;height:40px;border-radius:50%;background:rgba(255,255,255,.9);box-shadow:0 4px 14px -4px rgba(0,0,0,.25);transition:opacity .2s}.gal-b.l{left:10px}.gal-b.r{right:10px}.gal-b:disabled{opacity:0;pointer-events:none}
+.gal-n{position:absolute;top:12px;left:12px;background:rgba(10,10,11,.7);color:#fff;font-size:12px;font-weight:600;padding:3px 9px;border-radius:99px}
+.gal-d{position:absolute;bottom:10px;left:0;right:0;display:flex;justify-content:center;gap:5px}.gal-d i{width:6px;height:6px;border-radius:3px;background:rgba(10,10,11,.25);transition:width .25s,background .25s}.gal-d i.on{width:18px;background:var(--os-r)}
+@media (hover:none){.gal-b{display:none}}
+/* pagina della slide */
+.sl-tit{margin:22px 0 4px}.sl-tit h1{font:800 clamp(28px,4.5vw,48px)/1.05 "Archivo","Inter",sans-serif;letter-spacing:-.035em}.sl-tit p{margin-top:8px;color:var(--os-mut);font-size:18px}
+.sl-testo{max-width:720px;margin:28px auto 0;font-size:17.5px;line-height:1.75;color:#27272a}.sl-testo p{margin:0 0 18px}.sl-testo h2{font:800 24px/1.2 "Archivo",sans-serif;letter-spacing:-.02em;margin:32px 0 12px;color:var(--os-ink)}
+.sl-fig{margin:26px 0}.sl-fig button,.sl-gal button{display:block;width:100%;padding:0;cursor:zoom-in}.sl-fig img{width:100%;border-radius:18px}.sl-fig figcaption{font-size:14px;color:var(--os-mut);margin-top:8px;text-align:center}
+.sl-gal{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:10px;margin:24px 0}.sl-gal img{width:100%;aspect-ratio:4/3;object-fit:cover;border-radius:14px;transition:transform .3s}.sl-gal button:hover img{transform:scale(1.02)}
+.sl-prod{margin-top:44px;scroll-margin-top:150px}
+.sl-vai{position:fixed;z-index:35;left:50%;bottom:18px;transform:translateX(-50%);display:flex;align-items:center;gap:14px;width:min(560px,calc(100% - 24px));padding:10px 10px 10px 18px;border-radius:999px;background:rgba(10,10,11,.92);color:#e4e4e7;font-size:14px;box-shadow:0 18px 40px -14px rgba(0,0,0,.55);-webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px);transition:transform .35s var(--os-ease),opacity .3s}
+.sl-vai span{flex:1;min-width:0}.sl-vai b{color:#fff}.sl-vai button{white-space:nowrap;letter-spacing:.03em;box-shadow:0 8px 20px -8px rgba(225,6,0,.9)}
+.sl-vai.via{transform:translate(-50%,140%);opacity:0;pointer-events:none}
+@media (max-width:767px){body:has(.sl-vai:not(.via)) a[aria-label="Scrivici su WhatsApp"]{bottom:calc(150px + env(safe-area-inset-bottom,0px))}.sl-vai{bottom:calc(72px + env(safe-area-inset-bottom,0px))}.sl-vai span{font-size:13px}.sl-testo{font-size:16.5px}}
+.sl-lb{position:fixed;inset:0;z-index:60;background:rgba(0,0,0,.92);display:grid;place-items:center;padding:16px;cursor:zoom-out}.sl-lb img{max-width:100%;max-height:100%;border-radius:10px}.sl-lb button{position:absolute;top:14px;right:16px;color:#fff;font-size:26px}
 @media (max-width:640px){.os-hero{border-radius:22px}.os-h{align-items:flex-start;flex-direction:column;gap:6px}.os-serv{min-height:0}.os-marquee{margin-top:16px}.os-hero-t{max-width:none!important}}
 @media (prefers-reduced-motion:reduce){.os-mq,.os-beam,.os-dot.on::after,.annuncio::before,.os-wave path{animation:none!important}.os-rv{animation:none!important}}
 </style></head>
@@ -133,7 +151,7 @@ const normP=(p,V)=>{const v=(V||{})[p.codice]||{},usato=p.usato!=null?!!p.usato:
  const car=(p.caratteristiche||[]).map(x=>{x=String(x);const i=x.indexOf(':');return i>0?[x.slice(0,i).trim(),x.slice(i+1).trim()]:null}).filter(c=>c&&c[0]&&c[0].length<=40&&c[1]&&c[1].length<=60);
  return{sku:p.codice,slug:p.slug,nome:p.nome,marca:p.marca||'',categoria:p.categoria||'Altro',sub:(p.sottocategoria||'').trim(),sub2:(p.sottocategoria2||'').trim(),prezzo:+p.prezzo,prezzoPrima:+v.prezzo_prima>+p.prezzo?+v.prezzo_prima:(+p.prezzo_prima>+p.prezzo?+p.prezzo_prima:undefined),digitale:!!p.digitale,stato:usato?'usato':'nuovo',condizione:p.condizione!==undefined?(p.condizione||(usato?'Usato':'')):(usato?'Usato':'Nuovo'),
   giacenza:ordinabile?(inMag?Math.max(1,+p.giacenza||1):99):0,inMag,sped:p.spedizione||null,car,variante:p.variante||'',gruppo:p.gruppo_varianti||null,evidenza:!!v.evidenza,immagine:(p.foto&&p.foto[0]&&p.foto[0].url)||''}};
-const normS=x=>({id:String(x.id),t:x.titolo,x:x.testo,cta:x.cta||'Scopri',tipo:x.tipo==='video'?'video':'foto',media:x.media_url||'',link:x.link||((x.prodotti||[]).length?undefined:'#/catalogo'),rel:x.prodotti||[]});
+const normS=x=>({id:String(x.id),t:x.titolo,x:x.testo,cta:x.cta||'Scopri',tipo:x.tipo==='video'?'video':'foto',media:x.media_url||'',link:x.link||((x.prodotti||[]).length||x.contenuto||(x.immagini||[]).length?undefined:'#/catalogo'),rel:x.prodotti||[],mostra:x.mostra_titolo!==false,cont:x.contenuto||'',imm:x.immagini||[]});
 const DEMO_MODE=new URLSearchParams(location.search).has('anteprima'); /* barra tecnica e dati di esempio solo con ?anteprima=1 */
 const API_URL='https://oversound.pythonanywhere.com'; /* indirizzo del gestionale; null = solo dati di esempio */
 let PAGINE=[],COSTO=7.9,PAGAM=[{chiave:'bonifico',tipo:'bonifico',nome:'Bonifico bancario',descrizione:''}],ISTR='';
@@ -225,17 +243,52 @@ const Card=React.memo(function Card({p,fav,onFav,onCart}){const out=p.giacenza<1
 const Grid=({items,...r})=>items.length?html`<div class="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">${items.map(p=>html`<${Card} key=${p.sku} p=${p} fav=${r.favs.includes(p.sku)} onFav=${r.onFav} onCart=${r.onCart}/>`)}</div>`
  :html`<p class="rounded-xl bg-zinc-50 p-8 text-center text-zinc-600">Nessun prodotto trovato. Prova a cambiare o azzerare i filtri.</p>`;
 
+/* trascinamento col dito (o col mouse) a destra e a sinistra */
+function useSwipe(onPrev,onNext){const r=React.useRef(null);
+ return{onTouchStart:e=>{const t=e.touches[0];r.current={x:t.clientX,y:t.clientY,m:false}},
+  onTouchMove:e=>{const z=r.current;if(!z)return;const t=e.touches[0];if(Math.abs(t.clientX-z.x)>12&&Math.abs(t.clientX-z.x)>Math.abs(t.clientY-z.y))z.m=true},
+  onTouchEnd:e=>{const z=r.current;if(!z)return;const dx=(e.changedTouches[0]||{}).clientX-z.x;if(z.m&&Math.abs(dx)>40){dx<0?onNext():onPrev();z.blocca=Date.now()}r.current=z.m?{blocca:Date.now()}:null},
+  onClickCapture:e=>{const z=r.current;if(z&&z.blocca&&Date.now()-z.blocca<500){e.preventDefault();e.stopPropagation()}}}}
 function Slider(){const [i,setI]=useState(0),[pausa,setPausa]=useState(false);useEffect(()=>{if(pausa)return;const t=setInterval(()=>{if(!document.hidden)setI(x=>(x+1)%SLIDES.length)},5000);return()=>clearInterval(t)},[pausa,i]);
- const s=SLIDES[i];const n=d=>setI((i+d+SLIDES.length)%SLIDES.length);
- return html`<section aria-label="Novità e offerte" class="os-hero relative overflow-hidden rounded-2xl" onMouseEnter=${()=>setPausa(true)} onMouseLeave=${()=>setPausa(false)} onTouchStart=${()=>setPausa(true)} onTouchEnd=${()=>setTimeout(()=>setPausa(false),4000)}>
-  <a key=${s.id} href=${s.link||'#/novita/'+s.id} class="relative block aspect-[4/3] sm:aspect-[21/8] fade"><${Media} tipo=${s.tipo} g=${s.g} src=${s.media}/>
-   <div class="os-hero-ov absolute inset-0 flex flex-col justify-end bg-gradient-to-t from-black/70 to-transparent p-5 text-white sm:p-10">
+ const s=SLIDES[i]||SLIDES[0];const n=d=>setI((i+d+SLIDES.length)%SLIDES.length);const sw=useSwipe(()=>n(-1),()=>n(1));
+ return html`<section aria-label="Novità e offerte" class="os-hero relative overflow-hidden rounded-2xl" onMouseEnter=${()=>setPausa(true)} onMouseLeave=${()=>setPausa(false)} onTouchStart=${e=>{setPausa(true);sw.onTouchStart(e)}} onTouchMove=${sw.onTouchMove} onTouchEnd=${e=>{sw.onTouchEnd(e);setTimeout(()=>setPausa(false),4000)}} onClickCapture=${sw.onClickCapture}>
+  <a key=${s.id} href=${s.link||'#/novita/'+s.id} class="relative block aspect-[4/3] sm:aspect-[21/8] fade" draggable="false" aria-label=${s.t}><${Media} tipo=${s.tipo} g=${s.g} src=${s.media}/>
+   ${s.mostra!==false&&html`<div class="os-hero-ov absolute inset-0 flex flex-col justify-end bg-gradient-to-t from-black/70 to-transparent p-5 text-white sm:p-10">
      <span class="os-eyebrow os-eyebrow-l">${String(i+1).padStart(2,'0')} / ${String(SLIDES.length).padStart(2,'0')} · In primo piano</span>
-     <h2 class="os-hero-t max-w-xl text-2xl font-black sm:text-4xl">${s.t}</h2><p class="os-hero-x mt-1 max-w-md text-sm sm:text-base">${s.x}</p>
-     <span class="os-cta mt-3 w-fit rounded-full bg-brand px-5 py-2 text-sm font-semibold">${s.cta}<span class="os-arr" aria-hidden="true">→</span></span></div></a>
+     <h2 class="os-hero-t max-w-xl text-2xl font-black sm:text-4xl">${s.t}</h2>${s.x&&html`<p class="os-hero-x mt-1 max-w-md text-sm sm:text-base">${s.x}</p>`}
+     <span class="os-cta mt-3 w-fit rounded-full bg-brand px-5 py-2 text-sm font-semibold">${s.cta}<span class="os-arr" aria-hidden="true">→</span></span></div>`}</a>
   <button aria-label="Precedente" onClick=${()=>n(-1)} class="os-glass absolute left-2 top-1/2 -translate-y-1/2 rounded-full bg-white/90 p-2"><${Ic} d=${P.l}/></button>
   <button aria-label="Successiva" onClick=${()=>n(1)} class="os-glass absolute right-2 top-1/2 -translate-y-1/2 rounded-full bg-white/90 p-2"><${Ic} d=${P.r}/></button>
   <div class="absolute bottom-3 right-4 flex gap-1.5">${SLIDES.map((x,k)=>html`<button key=${x.id} aria-label=${'Slide '+(k+1)} onClick=${()=>setI(k)} class=${'os-dot h-2 rounded-full '+(k===i?'on w-6 bg-brand':'w-2 bg-white/70')}/>`)}</div></section>`}
+
+/* foto del prodotto: si sfogliano col dito (scorrimento a scatto), con frecce, contatore e miniature */
+function Galleria({foto,fi,setFi,alt}){const tr=React.useRef(null),L=foto.length?foto:[null];
+ useEffect(()=>{const t=tr.current;if(t&&Math.round(t.scrollLeft/t.clientWidth)!==fi)t.scrollTo({left:fi*t.clientWidth,behavior:'smooth'})},[fi]);
+ const onScroll=e=>{const t=e.currentTarget,k=Math.round(t.scrollLeft/Math.max(1,t.clientWidth));if(k!==fi&&k>=0&&k<L.length)setFi(k)};
+ const vai=d=>setFi(Math.max(0,Math.min(L.length-1,fi+d)));
+ return html`<div><div class="gal relative overflow-hidden rounded-2xl bg-zinc-100"><div class="gal-tr" ref=${tr} onScroll=${onScroll} role="region" aria-label="Foto del prodotto">${L.map((u,k)=>html`<div key=${k} class="gal-it aspect-square"><${Media} tipo="foto" fit="contain" src=${u}/></div>`)}</div>
+  ${L.length>1&&html`<button aria-label="Foto precedente" disabled=${fi===0} onClick=${()=>vai(-1)} class="gal-b l"><${Ic} d=${P.l}/></button><button aria-label="Foto successiva" disabled=${fi===L.length-1} onClick=${()=>vai(1)} class="gal-b r"><${Ic} d=${P.r}/></button>
+   <span class="gal-n">${fi+1} / ${L.length}</span><div class="gal-d">${L.map((_,k)=>html`<i key=${k} class=${k===fi?'on':''}/>`)}</div>`}</div>
+  ${L.length>1&&html`<div class="mt-2 flex gap-2 overflow-x-auto">${L.map((u,k)=>html`<button key=${k} onClick=${()=>setFi(k)} aria-label=${'Foto '+(k+1)} class=${'h-16 w-16 shrink-0 overflow-hidden rounded-lg border-2 '+(k===fi?'border-brand':'border-transparent')}><img class="h-full w-full object-cover" src=${u} alt="" loading="lazy"/></button>`)}</div>`}</div>`}
+
+/* pagina della slide: foto, testo completo con immagini, prodotti in fondo e striscia «VAI AI PRODOTTI» */
+function PaginaSlide({sl,prod,sh}){const items=(sl.rel||[]).map(k=>prod.find(p=>p.sku===k)).filter(Boolean),pr=React.useRef(null),[vis,setVis]=useState(false),[lb,setLb]=useState(null);
+ useEffect(()=>{const el=pr.current;if(!el||!('IntersectionObserver' in window))return;const o=new IntersectionObserver(e=>setVis(e[0].isIntersecting),{rootMargin:'0px 0px -30% 0px'});o.observe(el);return()=>o.disconnect()},[sl.id,items.length]);
+ const imm=sl.imm||[],usate=new Set(),blocchi=(sl.cont||'').split(/\n\s*\n/).map(b=>b.trim()).filter(Boolean);
+ const foto=k=>{const x=imm[k-1];if(!x)return null;usate.add(k-1);return html`<figure key=${'f'+k} class="sl-fig"><button onClick=${()=>setLb(x.url)} aria-label="Ingrandisci"><img src=${x.url} alt=${x.didascalia||''} loading="lazy"/></button>${x.didascalia&&html`<figcaption>${x.didascalia}</figcaption>`}</figure>`};
+ const corpo=blocchi.map((b,j)=>{const m=b.match(/^\[foto\s*(\d+)\]$/i);if(m)return foto(+m[1]);if(b.startsWith('#'))return html`<h2 key=${j}>${b.replace(/^#+\s*/,'')}</h2>`;
+  const parti=b.split(/(\[foto\s*\d+\])/i);return parti.length>1?parti.map((x,q)=>{const z=x.match(/^\[foto\s*(\d+)\]$/i);return z?foto(+z[1]):x.trim()&&html`<p key=${j+'-'+q}>${x.trim()}</p>`}):html`<p key=${j}>${b.split('\n').map((r,q)=>q?[html`<br key=${q}/>`,r]:r)}</p>`});
+ const resto=imm.filter((_,k)=>!usate.has(k));
+ const vai=()=>{const el=pr.current;if(el)el.scrollIntoView({behavior:'smooth',block:'start'})};
+ return html`<article class="sl-pag">
+  <div class="sl-hero relative overflow-hidden rounded-2xl"><div class="aspect-[4/3] sm:aspect-[21/8]"><${Media} tipo=${sl.tipo} g=${sl.g} src=${sl.media}/></div>
+   ${sl.mostra!==false&&html`<div class="os-hero-ov absolute inset-0 flex flex-col justify-end p-6 text-white sm:p-10"><span class="os-eyebrow os-eyebrow-l">Novità</span><h1 class="os-hero-t text-3xl font-black">${sl.t}</h1>${sl.x&&html`<p class="os-hero-x">${sl.x}</p>`}</div>`}</div>
+  ${sl.mostra===false&&html`<header class="sl-tit"><span class="os-eyebrow">Novità</span><h1>${sl.t}</h1>${sl.x&&html`<p>${sl.x}</p>`}</header>`}
+  ${(corpo.length||resto.length)&&html`<div class="sl-testo">${corpo}${resto.length>0&&html`<div class="sl-gal">${resto.map((x,k)=>html`<button key=${k} onClick=${()=>setLb(x.url)} aria-label="Ingrandisci"><img src=${x.url} alt=${x.didascalia||''} loading="lazy"/></button>`)}</div>`}</div>`}
+  ${items.length>0&&html`<section ref=${pr} id="prodotti-slide" class="sl-prod"><div class="os-h"><div><span class="os-eyebrow">Li trovi qui</span><h2 class="text-xl font-bold">Prodotti di questa novità</h2></div></div><${Grid} items=${items} ...${sh}/></section>
+   <div class=${'sl-vai'+(vis?' via':'')} role="region" aria-label="Vai ai prodotti"><span><b>${items.length} ${items.length===1?'prodotto':'prodotti'}</b> in questa novità</span><button onClick=${vai} class="rounded-full bg-brand px-5 py-2.5 text-sm font-bold text-white">VAI AI PRODOTTI ↓</button></div>`}
+  ${lb&&html`<div class="sl-lb" onClick=${()=>setLb(null)} role="dialog" aria-label="Immagine"><img src=${lb} alt=""/><button aria-label="Chiudi">✕</button></div>`}
+ </article>`}
 
 function Servizio({id}){const s=SERV.find(x=>x.id===id);if(!s)return html`<${NF}/>`;
  const L=({a})=>html`<ul class="space-y-2">${a.map(d=>html`<li key=${d} class="flex gap-2"><${Ic} d=${P.ck} s=${18} c="mt-0.5 shrink-0 text-brand"/>${d}</li>`)}</ul>`;
@@ -552,8 +605,8 @@ function App(){
    <div class="grid gap-6 md:grid-cols-[220px_1fr]"><aside class=${(fo?'':'hidden ')+'md:block'}><${Filtri} fc=${fc} f=${f} setF=${setF} base=${base} chiudi=${fo?()=>setFo(false):null}/></aside><div class="min-w-0">
     <div class="mb-3 flex flex-wrap items-center gap-3 text-sm"><button onClick=${()=>setFo(!fo)} class="flex items-center gap-2 rounded-full bg-zinc-950 px-4 py-1.5 font-semibold text-white md:hidden"><${Ic} d=${'M4 6h16M7 12h10M10 18h4'} s=${16}/>Filtri${nFiltri(f)?' ('+nFiltri(f)+')':''}</button><label class="flex items-center gap-2">Ordina per <select class=${sel} value=${ord} onChange=${e=>setOrd(e.target.value)}><option value="rilevanza">Rilevanza</option><option value="offerte">Offerte prima</option><option value="prezzo-asc">Prezzo crescente</option><option value="prezzo-desc">Prezzo decrescente</option></select></label></div>
     <${FiltriAttivi} f=${f} setF=${setF}/><${Grid} items=${lista.slice(0,mostra)} ...${sh}/>${lista.length>mostra&&html`<div class="mt-6 text-center"><button onClick=${()=>setMostra(m=>m+24)} class="rounded-full border border-brand px-6 py-2.5 font-semibold text-brand hover:bg-brand hover:text-white">Mostra altri prodotti</button></div>`}</div></div>`}
-  ${ok&&page==='novita'&&(sl?html`<div class="relative aspect-[4/3] overflow-hidden rounded-2xl sm:aspect-[21/8]"><${Media} tipo=${sl.tipo} g=${sl.g} src=${sl.media}/><div class="absolute inset-0 flex flex-col justify-end bg-black/50 p-6 text-white sm:p-10"><h1 class="text-3xl font-black">${sl.t}</h1><p>${sl.x}</p></div></div><h2 class="mb-4 mt-8 text-xl font-bold">Prodotti correlati</h2><${Grid} items=${prod.filter(p=>sl.rel?.includes(p.sku))} ...${sh}/>`:html`<${NF}/>`)}
-  ${ok&&page==='prodotto'&&(pr?html`<div class="grid gap-8 md:grid-cols-2"><div><div class="aspect-square overflow-hidden rounded-2xl bg-zinc-100"><${Media} tipo="foto" fit="contain" src=${(det&&det.foto&&det.foto[fi]&&det.foto[fi].url)||pr.immagine}/></div>${det&&det.foto&&det.foto.length>1&&html`<div class="mt-2 flex gap-2 overflow-x-auto">${det.foto.map((x,k)=>html`<button key=${k} onClick=${()=>setFi(k)} aria-label=${'Foto '+(k+1)} class=${'h-16 w-16 shrink-0 overflow-hidden rounded-lg border-2 '+(k===fi?'border-brand':'border-transparent')}><img class="h-full w-full object-cover" src=${x.url} alt="" loading="lazy"/></button>`)}</div>`}</div><div class="flex flex-col gap-3">
+  ${ok&&page==='novita'&&(sl?html`<${PaginaSlide} key=${sl.id} sl=${sl} prod=${prod} sh=${sh}/>`:html`<${NF}/>`)}
+  ${ok&&page==='prodotto'&&(pr?html`<div class="grid gap-8 md:grid-cols-2"><div><${Galleria} key=${pr.sku} foto=${det&&det.foto&&det.foto.length?det.foto.map(x=>x.url):(pr.immagine?[pr.immagine]:[])} fi=${fi} setFi=${setFi} alt=${pr.nome}/></div><div class="flex flex-col gap-3">
     <p class="text-sm text-zinc-500"><a href="#/" class="hover:text-brand">Home</a> › <a href=${'#/catalogo?cat='+encodeURIComponent(pr.categoria)} class="capitalize hover:text-brand">${pr.categoria}</a>${pr.sub&&html` › <a href=${'#/catalogo?cat='+encodeURIComponent(pr.categoria)+'&sub='+encodeURIComponent(pr.sub)} class="hover:text-brand">${pr.sub}</a>`}${pr.sub2&&html` › <a href=${'#/catalogo?cat='+encodeURIComponent(pr.categoria)+'&sub='+encodeURIComponent(pr.sub)+'&sub2='+encodeURIComponent(pr.sub2)} class="hover:text-brand">${pr.sub2}</a>`} › ${pr.marca}</p><h1 class="text-3xl font-black">${pr.nome}</h1>${stat(rev,pr.sku).n>0&&html`<button onClick=${()=>document.getElementById('recensioni')?.scrollIntoView({behavior:'smooth'})} class="flex w-fit items-center gap-2 text-sm"><${Stars} v=${stat(rev,pr.sku).avg} s=${16}/><span class="text-zinc-600 underline">${stat(rev,pr.sku).avg.toFixed(1)} · ${stat(rev,pr.sku).n} recensioni</span></button>`}<p class="text-zinc-600">${pr.marca} · ${pr.stato==='nuovo'?'Nuovo':(pr.condizione&&pr.condizione!=='Nuovo'?pr.condizione:'Usato garantito')} · Codice ${pr.sku}</p>
     <div><strong class="text-3xl">${eur(pr.prezzo)}</strong>${pr.prezzoPrima&&html`<s class="ml-2 text-zinc-400">${eur(pr.prezzoPrima)}</s><span class="ml-2 rounded-full bg-brand px-2 py-0.5 text-xs font-bold text-white">Risparmi ${eur(pr.prezzoPrima-pr.prezzo)}</span>`}</div>${pr.digitale?html`<p class="text-sm font-semibold text-green-700">Disponibile · download immediato</p>`:html`<p class=${'text-sm font-semibold '+(pr.giacenza<1?'text-brand':pr.inMag===false||pr.giacenza<3?'text-amber-600':'text-green-700')}>${pr.giacenza<1?'Esaurito':pr.inMag===false?'Su ordinazione':pr.giacenza<3?'Ultimi '+pr.giacenza+' pezzi disponibili':'Disponibile'}${pr.giacenza>0&&pr.sped?' · spedizione in '+ggTesto(pr.sped):''}</p>`}${pr.giacenza<1&&html`<${Avviso} p=${pr}/>`}<${Varianti} pr=${pr} det=${det}/>
     ${det&&det.digitale&&html`<p class="w-fit rounded-full bg-sky-50 px-3 py-1 text-sm font-semibold text-sky-800">💾 ${det.digitale_tipo||'Prodotto digitale'} · ${det.gratis?'download gratuito':'download immediato dopo il pagamento'}${det.digitale_licenza?' · licenza inclusa':''}</p>`}
