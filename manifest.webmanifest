@@ -1,0 +1,23 @@
+{
+  "name": "OVERSOUND – Strumenti musicali, audio e luci",
+  "short_name": "OVERSOUND",
+  "description": "Strumenti musicali, audio, luci, service per eventi, riparazioni.",
+  "id": "/",
+  "start_url": "/?app=1",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#ffffff",
+  "theme_color": "#0a0a0b",
+  "lang": "it",
+  "categories": ["shopping", "music"],
+  "icons": [
+    {"src": "/icone/app-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any"},
+    {"src": "/icone/app-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any"},
+    {"src": "/icone/app-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable"}
+  ],
+  "shortcuts": [
+    {"name": "Catalogo", "url": "/#/catalogo", "icons": [{"src": "/icone/app-192.png", "sizes": "192x192"}]},
+    {"name": "Carrello", "url": "/#/carrello", "icons": [{"src": "/icone/app-192.png", "sizes": "192x192"}]}
+  ]
+}
