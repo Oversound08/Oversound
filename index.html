@@ -65,13 +65,6 @@ h1,h2,h3,.font-black{font-family:"Archivo","Inter",system-ui,sans-serif;letter-s
 .os-mq b:nth-child(3n+1){color:var(--os-ink);-webkit-text-stroke:0}.os-mq i{font-style:normal;color:var(--os-r);-webkit-text-stroke:0;font-size:.6em}
 .os-marquee:hover .os-mq{animation-play-state:paused}
 @keyframes os-mq{to{transform:translateX(-50%)}}
-/* categorie */
-.os-cat{position:relative;border-radius:20px!important;border-color:var(--os-line)!important;background:linear-gradient(180deg,#fff,var(--os-soft));padding:22px 14px 18px!important;transition:transform .35s var(--os-ease),box-shadow .35s,border-color .25s,color .2s;overflow:hidden}
-.os-cat::before{content:"";position:absolute;inset:auto -30% -60% -30%;height:80%;background:radial-gradient(closest-side,rgba(225,6,0,.16),transparent);opacity:0;transition:opacity .35s}
-.os-cat:hover{transform:translateY(-4px);box-shadow:0 18px 40px -18px rgba(225,6,0,.45)}.os-cat:hover::before{opacity:1}
-.os-ic{display:grid;place-items:center;width:64px;height:64px;border-radius:18px;background:#fff;box-shadow:0 1px 0 rgba(0,0,0,.04),0 6px 16px -8px rgba(0,0,0,.18);color:var(--os-ink);transition:background .3s,color .3s,transform .35s var(--os-ease)}
-.os-cat:hover .os-ic{background:var(--os-r);color:#fff;transform:rotate(-6deg) scale(1.04)}
-.os-go{position:absolute;top:12px;right:14px;font-size:14px;color:var(--os-r);opacity:0;transform:translateX(-6px);transition:opacity .25s,transform .25s}.os-cat:hover .os-go{opacity:1;transform:none}
 /* tab prodotti a pillola */
 .os-tabs{background:var(--os-soft);padding:4px;border-radius:999px;gap:2px!important}.os-tabs button{background:transparent!important;color:var(--os-mut);transition:background .25s,color .25s,box-shadow .25s}
 .os-tabs button.on{background:var(--os-k)!important;color:#fff!important;box-shadow:0 6px 16px -6px rgba(0,0,0,.4)}.os-tabs button:not(.on):hover{color:var(--os-ink)}
@@ -116,10 +109,10 @@ h1,h2,h3,.font-black{font-family:"Archivo","Inter",system-ui,sans-serif;letter-s
 /* pulsanti e campi in tutto il sito */
 .bg-brand{transition:background-color .2s,transform .2s,box-shadow .2s}
 a.bg-brand:hover,button.bg-brand:not(:disabled):hover{box-shadow:0 10px 24px -10px rgba(225,6,0,.75)}
-.rounded-xl{border-radius:16px}.rounded-2xl{border-radius:22px}
+.rounded-2xl{border-radius:22px}
 /* comparsa morbida delle sezioni mentre scorri (solo browser che lo supportano) */
 @supports (animation-timeline:view()){.os-rv{animation:os-in both var(--os-ease);animation-timeline:view();animation-range:entry 0% entry 35%}@keyframes os-in{from{opacity:0;transform:translateY(28px)}to{opacity:1;transform:none}}}
-@media (max-width:640px){.os-hero{border-radius:22px}.os-h{align-items:flex-start;flex-direction:column;gap:6px}.os-ic{width:54px;height:54px;border-radius:15px}.os-serv{min-height:0}.os-marquee{margin-top:16px}.os-hero-t{max-width:none!important}}
+@media (max-width:640px){.os-hero{border-radius:22px}.os-h{align-items:flex-start;flex-direction:column;gap:6px}.os-serv{min-height:0}.os-marquee{margin-top:16px}.os-hero-t{max-width:none!important}}
 @media (prefers-reduced-motion:reduce){.os-mq,.os-beam,.os-dot.on::after,.annuncio::before,.os-wave path{animation:none!important}.os-rv{animation:none!important}}
 </style></head>
 <body><div id="root"></div>
@@ -546,7 +539,7 @@ function App(){
   ${!prod&&html`<div class="grid grid-cols-2 gap-3 sm:grid-cols-4">${[1,2,3,4,5,6,7,8].map(k=>html`<div key=${k} class="aspect-[3/4] animate-pulse rounded-xl bg-zinc-100"/>`)}</div>`}
   ${ok&&!page&&html`<${Slider}/>
    <div class="os-marquee" aria-hidden="true"><div class="os-mq">${[0,1].map(k=>html`<span key=${k}>${CATS.map(c=>c[1]).concat(['Service per eventi','Assistenza tecnica','Usato garantito']).map((t,j)=>html`<b key=${j}>${t}<i>✦</i></b>`)}</span>`)}</div></div>
-   <section class="os-rv mt-10"><div class="os-h"><div><span class="os-eyebrow">Esplora il negozio</span><h2 class="mb-4 text-xl font-bold">Categorie</h2></div><a href="#/catalogo" class="os-more">Tutto il catalogo <span aria-hidden="true">→</span></a></div><div class="os-cats grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-6">${CATS.map(c=>html`<a key=${c[0]} href=${'#/catalogo?cat='+encodeURIComponent(c[0])} class="os-cat flex flex-col items-center gap-3 rounded-xl border border-zinc-200 p-5 hover:border-brand hover:text-brand"><span class="os-ic"><${CatIcon} nome=${c[0]} s=${34}/></span><span class="font-semibold">${c[1]}</span><span class="os-go" aria-hidden="true">→</span></a>`)}</div></section>
+   <section class="mt-10"><h2 class="mb-4 text-xl font-bold">Categorie</h2><div class="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-6">${CATS.map(c=>html`<a key=${c[0]} href=${'#/catalogo?cat='+encodeURIComponent(c[0])} class="flex flex-col items-center gap-3 rounded-xl border border-zinc-200 p-5 hover:border-brand hover:text-brand"><${CatIcon} nome=${c[0]} s=${34}/><span class="font-semibold">${c[1]}</span></a>`)}</div></section>
    <section class="os-rv mt-10"><div class="os-h"><div><span class="os-eyebrow">Selezionati per te</span><h2 class="text-xl font-bold">I nostri prodotti</h2></div></div><div class="mb-4 flex flex-wrap items-center justify-between gap-2"><div class="os-tabs flex gap-2">${[['ev','In evidenza'],['off','Offerte'],['us','Usato garantito']].map(([k,l])=>html`<button key=${k} onClick=${()=>setTab(k)} class=${'rounded-full px-4 py-1.5 text-sm font-semibold '+(tab===k?'on bg-brand text-white':'bg-zinc-100 hover:bg-zinc-200')}>${l}</button>`)}</div><a href="#/catalogo" class="os-more text-sm font-semibold text-brand">Vedi tutto <span aria-hidden="true">→</span></a></div><${Grid} items=${prod.filter(p=>tab==='ev'?p.evidenza:tab==='off'?p.prezzoPrima:p.stato==='usato').slice(0,8)} ...${sh}/></section>
    <section class="os-rv mt-10"><div class="os-h"><div><span class="os-eyebrow">Non solo negozio</span><h2 class="mb-4 text-xl font-bold">Servizi</h2></div></div><div class="grid gap-4 md:grid-cols-3">${SERV.map((s,k)=>html`<a key=${s.id} href=${'#/servizio/'+s.id} class="os-serv flex flex-col rounded-2xl border border-zinc-200 p-6 hover:border-brand"><span class="os-num">${String(k+1).padStart(2,'0')}</span><h3 class="text-lg font-bold">${s.t}</h3><p class="mt-1 text-sm text-zinc-600">${s.s}</p><span class="os-more mt-4 text-sm font-semibold text-brand">Scopri di più <span aria-hidden="true">→</span></span></a>`)}</div></section>
    <section class="os-trova os-rv relative mt-10 overflow-hidden rounded-2xl bg-zinc-950 p-6 text-white sm:p-10"><span class="os-beam" aria-hidden="true"></span><span class="os-beam b2" aria-hidden="true"></span><span class="os-eyebrow os-eyebrow-l">Consulenza gratuita</span><h2 class="text-2xl font-black sm:text-4xl">Non sai cosa scegliere?</h2><p class="mt-2 max-w-md text-sm text-zinc-300">Rispondi a tre domande e ti consigliamo gli strumenti giusti per te.</p><a href="#/consigli" class="mt-4 inline-block rounded-full bg-brand px-6 py-3 font-semibold text-white hover:bg-brand2">Trova il tuo strumento</a></section>
