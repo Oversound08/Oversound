@@ -20,7 +20,108 @@
 <style>:root{box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
 html{scroll-padding-top:env(safe-area-inset-top,0px)}body{background:#fff;color:#18181b;font-family:system-ui,-apple-system,sans-serif}
 :focus-visible{outline:2px solid #e10600;outline-offset:2px}
-.h-8{height:2rem}.w-8{width:2rem}.rounded{border-radius:.25rem}.cursor-pointer{cursor:pointer}@media (min-width:768px){.md\:block{display:block}}</style></head>
+.h-8{height:2rem}.w-8{width:2rem}.rounded{border-radius:.25rem}.cursor-pointer{cursor:pointer}@media (min-width:768px){.md\:block{display:block}}</style>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@600;700;800;900&family=Inter:wght@400;500;600;700&display=swap">
+<style id="design">/* ===== OVERSOUND · design 2026: stessi colori (rosso #e10600, nero, bianco), più moderno ===== */
+:root{--os-r:#e10600;--os-r2:#b80500;--os-k:#0a0a0b;--os-ink:#111113;--os-mut:#6b6b73;--os-line:#ececef;--os-soft:#f6f6f7;--os-ease:cubic-bezier(.2,.7,.2,1)}
+body{font-family:"Inter",system-ui,-apple-system,"Segoe UI",sans-serif;color:var(--os-ink);-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility;background:#fff}
+h1,h2,h3,.font-black{font-family:"Archivo","Inter",system-ui,sans-serif;letter-spacing:-.02em}
+.font-black{letter-spacing:-.035em}
+::selection{background:var(--os-r);color:#fff}input[type=radio],input[type=checkbox]{accent-color:var(--os-r)}
+/* barra annunci */
+.annuncio{background:var(--os-k)!important;color:#e4e4e7;letter-spacing:.02em;font-weight:500}
+.annuncio::before{content:"";display:inline-block;width:6px;height:6px;border-radius:50%;background:var(--os-r);margin-right:8px;vertical-align:1px;box-shadow:0 0 0 3px rgba(225,6,0,.25);animation:os-pulse 2s infinite}
+@keyframes os-pulse{50%{box-shadow:0 0 0 6px rgba(225,6,0,0)}}
+/* intestazione in vetro */
+.os-header{background:rgba(255,255,255,.82)!important;-webkit-backdrop-filter:saturate(1.6) blur(16px);backdrop-filter:saturate(1.6) blur(16px);border-color:rgba(0,0,0,.06)!important}
+.os-search{background:var(--os-soft);border-color:transparent!important;transition:background .2s,box-shadow .2s}
+.os-search:focus-within{background:#fff;box-shadow:0 0 0 2px var(--os-r),0 8px 24px -10px rgba(225,6,0,.35)}
+.os-header nav a{transition:background .2s,transform .2s}.os-header nav a:hover{transform:translateY(-1px)}
+.os-aiuto{background:linear-gradient(135deg,#18181b,#0a0a0b)!important;box-shadow:inset 0 0 0 1px rgba(255,255,255,.08)}.os-spark{color:var(--os-r);margin-right:2px}
+/* hero */
+.os-hero{border-radius:28px;box-shadow:0 30px 60px -30px rgba(10,10,11,.55);isolation:isolate}
+.os-hero>a{transition:transform .9s var(--os-ease)}.os-hero:hover>a img,.os-hero:hover>a video{transform:scale(1.03)}.os-hero img,.os-hero video{transition:transform 1.2s var(--os-ease)}
+.os-hero-ov{background:linear-gradient(100deg,rgba(10,10,11,.88) 0%,rgba(10,10,11,.55) 38%,rgba(10,10,11,0) 70%),linear-gradient(to top,rgba(10,10,11,.55),transparent 55%)!important}
+.os-hero-t{font-size:clamp(28px,5.2vw,64px)!important;line-height:.98;letter-spacing:-.045em;text-wrap:balance;max-width:16ch!important}
+.os-hero-x{color:#d4d4d8;font-size:clamp(14px,1.5vw,18px)!important;margin-top:10px!important}
+.os-cta{display:inline-flex;align-items:center;gap:8px;padding:12px 22px!important;font-size:15px!important;box-shadow:0 10px 30px -8px rgba(225,6,0,.7);transition:gap .25s,background .2s;margin-top:20px!important}
+.os-hero:hover .os-cta{gap:14px;background:var(--os-r2)}
+.os-glass{background:rgba(255,255,255,.14)!important;color:#fff;-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);border:1px solid rgba(255,255,255,.25)!important;padding:10px!important;transition:background .2s}
+.os-glass:hover{background:rgba(255,255,255,.28)!important}.os-hero>button.os-glass{top:auto!important;bottom:18px;transform:none!important;left:auto!important}.os-hero>button.os-glass[aria-label=Precedente]{right:70px!important}.os-hero>button.os-glass[aria-label=Successiva]{right:20px!important}.os-hero>div.absolute{top:22px;right:24px!important;bottom:auto!important}
+.os-dot{transition:width .4s var(--os-ease),background .3s}.os-dot.on{position:relative;overflow:hidden;background:rgba(255,255,255,.35)!important;width:34px!important}
+.os-dot.on::after{content:"";position:absolute;inset:0;background:var(--os-r);transform-origin:left;animation:os-bar 5s linear forwards}
+.os-hero:hover .os-dot.on::after{animation-play-state:paused}
+@keyframes os-bar{from{transform:scaleX(0)}to{transform:scaleX(1)}}
+/* etichette di sezione */
+.os-eyebrow{display:inline-flex;align-items:center;gap:8px;font:600 11.5px/1 "Inter",system-ui,sans-serif;letter-spacing:.16em;text-transform:uppercase;color:var(--os-r);margin-bottom:8px}
+.os-eyebrow::before{content:"";width:18px;height:2px;border-radius:2px;background:currentColor}
+.os-eyebrow-l{color:#fff;opacity:.92}.os-eyebrow-l::before{background:var(--os-r)}
+.os-h{display:flex;align-items:flex-end;justify-content:space-between;gap:12px;margin-bottom:16px}.os-h h2{font-size:clamp(24px,3vw,34px)!important;font-weight:800!important;margin:0!important;line-height:1.05}
+.os-more{display:inline-flex;align-items:center;gap:6px;font-weight:600;font-size:14px;color:var(--os-r);white-space:nowrap;transition:gap .2s}.os-more:hover{gap:11px}
+/* nastro scorrevole */
+.os-marquee{margin:22px -16px 0;overflow:hidden;border-block:1px solid var(--os-line);padding:14px 0;-webkit-mask-image:linear-gradient(90deg,transparent,#000 8%,#000 92%,transparent);mask-image:linear-gradient(90deg,transparent,#000 8%,#000 92%,transparent)}
+.os-mq{display:flex;width:max-content;animation:os-mq 38s linear infinite}.os-mq>span{display:flex}
+.os-mq b{display:inline-flex;align-items:center;gap:22px;padding-right:22px;font:800 clamp(18px,2.4vw,28px)/1 "Archivo",system-ui,sans-serif;letter-spacing:-.02em;text-transform:uppercase;color:transparent;-webkit-text-stroke:1.2px #18181b;white-space:nowrap}
+.os-mq b:nth-child(3n+1){color:var(--os-ink);-webkit-text-stroke:0}.os-mq i{font-style:normal;color:var(--os-r);-webkit-text-stroke:0;font-size:.6em}
+.os-marquee:hover .os-mq{animation-play-state:paused}
+@keyframes os-mq{to{transform:translateX(-50%)}}
+/* categorie */
+.os-cat{position:relative;border-radius:20px!important;border-color:var(--os-line)!important;background:linear-gradient(180deg,#fff,var(--os-soft));padding:22px 14px 18px!important;transition:transform .35s var(--os-ease),box-shadow .35s,border-color .25s,color .2s;overflow:hidden}
+.os-cat::before{content:"";position:absolute;inset:auto -30% -60% -30%;height:80%;background:radial-gradient(closest-side,rgba(225,6,0,.16),transparent);opacity:0;transition:opacity .35s}
+.os-cat:hover{transform:translateY(-4px);box-shadow:0 18px 40px -18px rgba(225,6,0,.45)}.os-cat:hover::before{opacity:1}
+.os-ic{display:grid;place-items:center;width:64px;height:64px;border-radius:18px;background:#fff;box-shadow:0 1px 0 rgba(0,0,0,.04),0 6px 16px -8px rgba(0,0,0,.18);color:var(--os-ink);transition:background .3s,color .3s,transform .35s var(--os-ease)}
+.os-cat:hover .os-ic{background:var(--os-r);color:#fff;transform:rotate(-6deg) scale(1.04)}
+.os-go{position:absolute;top:12px;right:14px;font-size:14px;color:var(--os-r);opacity:0;transform:translateX(-6px);transition:opacity .25s,transform .25s}.os-cat:hover .os-go{opacity:1;transform:none}
+/* tab prodotti a pillola */
+.os-tabs{background:var(--os-soft);padding:4px;border-radius:999px;gap:2px!important}.os-tabs button{background:transparent!important;color:var(--os-mut);transition:background .25s,color .25s,box-shadow .25s}
+.os-tabs button.on{background:var(--os-k)!important;color:#fff!important;box-shadow:0 6px 16px -6px rgba(0,0,0,.4)}.os-tabs button:not(.on):hover{color:var(--os-ink)}
+/* schede prodotto */
+.os-card{border-radius:20px!important;border-color:var(--os-line)!important;background:#fff;transition:transform .35s var(--os-ease),box-shadow .35s,border-color .3s!important}
+.os-card:hover{transform:translateY(-5px)!important;border-color:transparent!important;box-shadow:0 24px 48px -24px rgba(10,10,11,.35),0 0 0 1px rgba(10,10,11,.04)!important}
+.os-media{background:var(--os-soft)!important;margin:6px 6px 0;border-radius:15px;overflow:hidden}
+.os-media .foto-intera{background:transparent;mix-blend-mode:multiply}
+.os-media img{transition:transform .6s var(--os-ease)}.os-card:hover .os-media img{transform:scale(1.06)}
+.os-media>span{backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);letter-spacing:.02em}
+.os-fav{top:14px!important;right:14px!important;background:rgba(255,255,255,.85)!important;-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);box-shadow:0 4px 12px -4px rgba(0,0,0,.2)!important;transition:transform .2s}.os-fav:hover{transform:scale(1.1)}
+.os-card s{white-space:nowrap}@media (max-width:640px){.os-card s{display:block;margin:0 0 1px}}.os-price{font-family:"Archivo","Inter",sans-serif;font-weight:800;letter-spacing:-.02em;font-size:19px!important}
+.os-add{padding:10px!important;box-shadow:0 8px 18px -8px rgba(225,6,0,.8);transition:transform .25s var(--os-ease),background .2s}.os-card:hover .os-add:not(:disabled){transform:scale(1.08) rotate(-4deg)}
+/* servizi */
+.os-serv{position:relative;overflow:hidden;border-radius:24px!important;background:var(--os-k);color:#fff;border-color:#1f1f23!important;padding:28px!important;min-height:220px;transition:transform .35s var(--os-ease),box-shadow .35s}
+.os-serv::after{content:"";position:absolute;right:-60px;top:-60px;width:220px;height:220px;border-radius:50%;background:radial-gradient(closest-side,rgba(225,6,0,.55),transparent);transition:transform .5s var(--os-ease)}
+.os-serv:hover{transform:translateY(-4px);box-shadow:0 30px 50px -28px rgba(225,6,0,.55)}.os-serv:hover::after{transform:scale(1.35)}
+.os-serv h3{font-size:21px!important;position:relative;z-index:1}.os-serv p{color:#a1a1aa!important;position:relative;z-index:1}.os-serv .os-more{margin-top:auto!important;padding-top:18px;color:#fff;position:relative;z-index:1}.os-serv .os-more span{color:var(--os-r)}
+.os-num{position:relative;z-index:1;font:800 13px/1 "Archivo",sans-serif;letter-spacing:.1em;color:var(--os-r);margin-bottom:26px;display:inline-block;align-self:flex-start;padding:6px 10px;border:1px solid rgba(225,6,0,.45);border-radius:999px}
+/* «Non sai cosa scegliere?» con luci da palco */
+.os-trova{border-radius:28px!important;padding:clamp(28px,5vw,64px)!important;background:radial-gradient(120% 140% at 100% 0%,#2a0503 0%,#0a0a0b 55%)!important}
+.os-trova>*{position:relative;z-index:1}.os-trova h2{font-size:clamp(28px,4.4vw,52px)!important;max-width:14ch;line-height:1}
+.os-trova .os-beam{position:absolute;z-index:0;top:-40%;right:12%;width:180px;height:180%;background:linear-gradient(180deg,rgba(225,6,0,.55),rgba(225,6,0,0) 70%);filter:blur(18px);transform:rotate(22deg);transform-origin:top;animation:os-beam 7s ease-in-out infinite alternate;pointer-events:none}
+.os-trova .os-beam.b2{right:32%;width:110px;opacity:.6;animation-duration:9s;animation-delay:-3s;background:linear-gradient(180deg,rgba(255,255,255,.28),rgba(255,255,255,0) 65%)}
+@keyframes os-beam{from{transform:rotate(14deg)}to{transform:rotate(32deg)}}
+.os-trova a{box-shadow:0 12px 30px -10px rgba(225,6,0,.75);transition:transform .25s}.os-trova a:hover{transform:translateY(-2px)}
+/* vantaggi */
+.os-trust{background:#fff!important;border:1px solid var(--os-line);border-radius:18px!important;padding:18px!important;align-items:flex-start;transition:border-color .25s,transform .3s var(--os-ease)}.os-trust:hover{border-color:rgba(225,6,0,.35);transform:translateY(-2px)}
+.os-ti{display:grid;place-items:center;flex:none;width:44px;height:44px;border-radius:13px;background:rgba(225,6,0,.08)}
+/* newsletter */
+.os-news{border-radius:28px!important;padding:clamp(28px,5vw,56px)!important;background:linear-gradient(120deg,#e10600 0%,#c40500 55%,#8f0400 100%)!important}
+.os-news>*:not(.os-wave){position:relative;z-index:1}.os-news .os-eyebrow-l::before{background:#fff}.os-news h2{font-size:clamp(26px,3.6vw,42px)!important;line-height:1.02}
+.os-news input{background:rgba(255,255,255,.96);padding:12px 18px!important}.os-news button{padding:12px 22px!important;transition:transform .2s}.os-news button:hover{transform:translateY(-1px)}
+.os-wave{position:absolute;right:-4%;bottom:-8%;width:52%;height:75%;opacity:.2;fill:none;stroke:#fff;stroke-width:2;z-index:0}
+.os-wave path:nth-child(2){opacity:.6;animation:os-wv 6s ease-in-out infinite alternate}@keyframes os-wv{to{transform:translateY(8px)}}
+/* piè di pagina */
+.os-footer{position:relative;background:#0a0a0b!important}.os-footer::before{content:"";position:absolute;left:0;right:0;top:0;height:2px;background:linear-gradient(90deg,transparent,var(--os-r),transparent)}
+.os-footer h2{font-size:12px!important;letter-spacing:.14em;text-transform:uppercase;color:#a1a1aa!important}
+/* barra in basso (telefono) */
+.tabbar{background:rgba(255,255,255,.86)!important;-webkit-backdrop-filter:saturate(1.6) blur(16px)!important;backdrop-filter:saturate(1.6) blur(16px)!important;border-top-color:rgba(0,0,0,.06)!important}
+.tabbar a.on::before{content:"";position:absolute;top:0;left:30%;right:30%;height:3px;border-radius:0 0 3px 3px;background:var(--os-r)}
+/* pulsanti e campi in tutto il sito */
+.bg-brand{transition:background-color .2s,transform .2s,box-shadow .2s}
+a.bg-brand:hover,button.bg-brand:not(:disabled):hover{box-shadow:0 10px 24px -10px rgba(225,6,0,.75)}
+.rounded-xl{border-radius:16px}.rounded-2xl{border-radius:22px}
+/* comparsa morbida delle sezioni mentre scorri (solo browser che lo supportano) */
+@supports (animation-timeline:view()){.os-rv{animation:os-in both var(--os-ease);animation-timeline:view();animation-range:entry 0% entry 35%}@keyframes os-in{from{opacity:0;transform:translateY(28px)}to{opacity:1;transform:none}}}
+@media (max-width:640px){.os-hero{border-radius:22px}.os-h{align-items:flex-start;flex-direction:column;gap:6px}.os-ic{width:54px;height:54px;border-radius:15px}.os-serv{min-height:0}.os-marquee{margin-top:16px}.os-hero-t{max-width:none!important}}
+@media (prefers-reduced-motion:reduce){.os-mq,.os-beam,.os-dot.on::after,.annuncio::before,.os-wave path{animation:none!important}.os-rv{animation:none!important}}
+</style></head>
 <body><div id="root"></div>
 <script>
 const {useState,useEffect,useMemo}=React; const html=htm.bind(React.createElement);
@@ -117,30 +218,31 @@ function Media({tipo,c='',g,src,fit}){
 let REV=[];const stat=(r,k)=>{const x=r.filter(i=>i.sku===k);return{n:x.length,avg:x.length?x.reduce((a,i)=>a+i.voto,0)/x.length:0,r:x}};
 const Stars=({v,s=14})=>html`<span class="inline-flex" role="img" aria-label=${'Valutazione '+v.toFixed(1)+' su 5'}>${[1,2,3,4,5].map(i=>html`<${Ic} key=${i} d=${P_STAR} s=${s} c=${i<=Math.round(v)?'fill-amber-400 text-amber-400':'text-zinc-300'}/>`)}</span>`;
 const Card=React.memo(function Card({p,fav,onFav,onCart}){const out=p.giacenza<1,st=stat(REV,p.sku);
- return html`<article class="relative flex flex-col overflow-hidden rounded-xl border border-zinc-200 transition duration-200 hover:-translate-y-1 hover:shadow-lg">
-  <a href=${'#/prodotto/'+encodeURIComponent(p.sku)} class="relative block aspect-square bg-white"><${Media} tipo="foto" fit="contain" src=${p.immagine}/>
+ return html`<article class="os-card relative flex flex-col overflow-hidden rounded-xl border border-zinc-200 transition duration-200 hover:-translate-y-1 hover:shadow-lg">
+  <a href=${'#/prodotto/'+encodeURIComponent(p.sku)} class="os-media relative block aspect-square bg-white"><${Media} tipo="foto" fit="contain" src=${p.immagine}/>
    ${p.condizione&&html`<span class=${'absolute left-2 top-2 rounded-full px-2 py-0.5 text-xs font-semibold text-white '+(p.stato==='nuovo'?'bg-brand':'bg-zinc-900')}>${p.condizione}</span>`}${p.prezzoPrima&&html`<span class="absolute bottom-2 left-2 rounded-full bg-white px-2 py-0.5 text-xs font-bold text-brand">-${Math.round((1-p.prezzo/p.prezzoPrima)*100)}%</span>`}</a>
-  <button aria-label="Preferiti" onClick=${()=>onFav(p.sku)} class="absolute right-2 top-2 rounded-full bg-white p-1.5 shadow"><${Ic} d=${P.heart} s=${18} c=${fav?'fill-brand text-brand':''}/></button>
+  <button aria-label="Preferiti" onClick=${()=>onFav(p.sku)} class="os-fav absolute right-2 top-2 rounded-full bg-white p-1.5 shadow"><${Ic} d=${P.heart} s=${18} c=${fav?'fill-brand text-brand':''}/></button>
   <div class="flex flex-1 flex-col gap-1 p-3"><span class="text-xs text-zinc-500">${p.marca}</span>
    ${st.n>0&&html`<span class="flex items-center gap-1 text-xs text-zinc-500"><${Stars} v=${st.avg} s=${12}/>${st.avg.toFixed(1)} (${st.n})</span>`}
    <a href=${'#/prodotto/'+encodeURIComponent(p.sku)} class="text-sm font-semibold leading-snug hover:text-brand">${p.nome}</a>
    <span class=${'text-xs '+(out?'text-brand':p.inMag===false?'text-amber-600':'text-zinc-500')}>${dispTesto(p)}</span>${p.nv>1&&html`<span class="text-xs text-zinc-500">Disponibile in ${p.nv} varianti</span>`}
-   <div class="mt-auto flex items-center justify-between pt-2"><div>${p.prezzoPrima&&html`<s class="mr-1 text-xs text-zinc-400">${eur(p.prezzoPrima)}</s>`}<strong class="text-lg">${eur(p.prezzo)}</strong></div>
-    <button disabled=${out} aria-label="Aggiungi al carrello" onClick=${()=>onCart(p.sku)} class="rounded-full bg-brand p-2 text-white hover:bg-brand2 disabled:bg-zinc-300"><${Ic} d=${P.cart} s=${16}/></button></div></div></article>`},(a,b)=>a.p===b.p&&a.fav===b.fav);
+   <div class="mt-auto flex items-center justify-between pt-2"><div>${p.prezzoPrima&&html`<s class="mr-1 text-xs text-zinc-400">${eur(p.prezzoPrima)}</s>`}<strong class="os-price text-lg">${eur(p.prezzo)}</strong></div>
+    <button disabled=${out} aria-label="Aggiungi al carrello" onClick=${()=>onCart(p.sku)} class="os-add rounded-full bg-brand p-2 text-white hover:bg-brand2 disabled:bg-zinc-300"><${Ic} d=${P.cart} s=${16}/></button></div></div></article>`},(a,b)=>a.p===b.p&&a.fav===b.fav);
 
 const Grid=({items,...r})=>items.length?html`<div class="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">${items.map(p=>html`<${Card} key=${p.sku} p=${p} fav=${r.favs.includes(p.sku)} onFav=${r.onFav} onCart=${r.onCart}/>`)}</div>`
  :html`<p class="rounded-xl bg-zinc-50 p-8 text-center text-zinc-600">Nessun prodotto trovato. Prova a cambiare o azzerare i filtri.</p>`;
 
 function Slider(){const [i,setI]=useState(0),[pausa,setPausa]=useState(false);useEffect(()=>{if(pausa)return;const t=setInterval(()=>{if(!document.hidden)setI(x=>(x+1)%SLIDES.length)},5000);return()=>clearInterval(t)},[pausa,i]);
  const s=SLIDES[i];const n=d=>setI((i+d+SLIDES.length)%SLIDES.length);
- return html`<section aria-label="Novità e offerte" class="relative overflow-hidden rounded-2xl" onMouseEnter=${()=>setPausa(true)} onMouseLeave=${()=>setPausa(false)} onTouchStart=${()=>setPausa(true)} onTouchEnd=${()=>setTimeout(()=>setPausa(false),4000)}>
+ return html`<section aria-label="Novità e offerte" class="os-hero relative overflow-hidden rounded-2xl" onMouseEnter=${()=>setPausa(true)} onMouseLeave=${()=>setPausa(false)} onTouchStart=${()=>setPausa(true)} onTouchEnd=${()=>setTimeout(()=>setPausa(false),4000)}>
   <a key=${s.id} href=${s.link||'#/novita/'+s.id} class="relative block aspect-[4/3] sm:aspect-[21/8] fade"><${Media} tipo=${s.tipo} g=${s.g} src=${s.media}/>
-   <div class="absolute inset-0 flex flex-col justify-end bg-gradient-to-t from-black/70 to-transparent p-5 text-white sm:p-10">
-    <h2 class="max-w-xl text-2xl font-black sm:text-4xl">${s.t}</h2><p class="mt-1 max-w-md text-sm sm:text-base">${s.x}</p>
-    <span class="mt-3 w-fit rounded-full bg-brand px-5 py-2 text-sm font-semibold">${s.cta}</span></div></a>
-  <button aria-label="Precedente" onClick=${()=>n(-1)} class="absolute left-2 top-1/2 -translate-y-1/2 rounded-full bg-white/90 p-2"><${Ic} d=${P.l}/></button>
-  <button aria-label="Successiva" onClick=${()=>n(1)} class="absolute right-2 top-1/2 -translate-y-1/2 rounded-full bg-white/90 p-2"><${Ic} d=${P.r}/></button>
-  <div class="absolute bottom-3 right-4 flex gap-1.5">${SLIDES.map((x,k)=>html`<button key=${x.id} aria-label=${'Slide '+(k+1)} onClick=${()=>setI(k)} class=${'h-2 rounded-full '+(k===i?'w-6 bg-brand':'w-2 bg-white/70')}/>`)}</div></section>`}
+   <div class="os-hero-ov absolute inset-0 flex flex-col justify-end bg-gradient-to-t from-black/70 to-transparent p-5 text-white sm:p-10">
+     <span class="os-eyebrow os-eyebrow-l">${String(i+1).padStart(2,'0')} / ${String(SLIDES.length).padStart(2,'0')} · In primo piano</span>
+     <h2 class="os-hero-t max-w-xl text-2xl font-black sm:text-4xl">${s.t}</h2><p class="os-hero-x mt-1 max-w-md text-sm sm:text-base">${s.x}</p>
+     <span class="os-cta mt-3 w-fit rounded-full bg-brand px-5 py-2 text-sm font-semibold">${s.cta}<span class="os-arr" aria-hidden="true">→</span></span></div></a>
+  <button aria-label="Precedente" onClick=${()=>n(-1)} class="os-glass absolute left-2 top-1/2 -translate-y-1/2 rounded-full bg-white/90 p-2"><${Ic} d=${P.l}/></button>
+  <button aria-label="Successiva" onClick=${()=>n(1)} class="os-glass absolute right-2 top-1/2 -translate-y-1/2 rounded-full bg-white/90 p-2"><${Ic} d=${P.r}/></button>
+  <div class="absolute bottom-3 right-4 flex gap-1.5">${SLIDES.map((x,k)=>html`<button key=${x.id} aria-label=${'Slide '+(k+1)} onClick=${()=>setI(k)} class=${'os-dot h-2 rounded-full '+(k===i?'on w-6 bg-brand':'w-2 bg-white/70')}/>`)}</div></section>`}
 
 function Servizio({id}){const s=SERV.find(x=>x.id===id);if(!s)return html`<${NF}/>`;
  const L=({a})=>html`<ul class="space-y-2">${a.map(d=>html`<li key=${d} class="flex gap-2"><${Ic} d=${P.ck} s=${18} c="mt-0.5 shrink-0 text-brand"/>${d}</li>`)}</ul>`;
@@ -204,7 +306,7 @@ function Preventivo(){const [t,setT]=useState('Festa privata'),[n,setN]=useState
  <div class="mt-3 flex flex-wrap gap-2">${['Audio','Luci','Video'].map(k=>Chip(k,sv.includes(k)?k:'',tog,k))}</div>
  <a href=${wa(msg)} target="_blank" rel="noreferrer" class="mt-4 inline-flex items-center gap-2 rounded-full bg-brand px-6 py-3 font-semibold text-white hover:bg-brand2"><${Ic} d=${P.wa}/>Invia la richiesta su WhatsApp</a></div>`}
 function Newsletter(){const [ok,setOk]=useState(false);
- return html`<section class="mt-10 rounded-2xl bg-brand p-6 text-white sm:p-10"><h2 class="text-2xl font-black">Novità e offerte via email</h2><p class="mt-1 text-sm text-white/90">Iscriviti per sapere per primo di nuovi arrivi e promozioni.</p>
+ return html`<section class="os-news os-rv relative mt-10 overflow-hidden rounded-2xl bg-brand p-6 text-white sm:p-10"><svg class="os-wave" viewBox="0 0 600 120" preserveAspectRatio="none" aria-hidden="true"><path d="M0 60 Q 25 10 50 60 T 100 60 T 150 60 T 200 60 T 250 60 T 300 60 T 350 60 T 400 60 T 450 60 T 500 60 T 550 60 T 600 60"/><path d="M0 60 Q 25 100 50 60 T 100 60 T 150 60 T 200 60 T 250 60 T 300 60 T 350 60 T 400 60 T 450 60 T 500 60 T 550 60 T 600 60"/></svg><span class="os-eyebrow os-eyebrow-l">Newsletter</span><h2 class="text-2xl font-black">Novità e offerte via email</h2><p class="mt-1 text-sm text-white/90">Iscriviti per sapere per primo di nuovi arrivi e promozioni.</p>
  ${ok?html`<p class="mt-4 font-semibold">Grazie! Iscrizione registrata.${GESTIONALE.baseUrl?'':' (demo)'}</p>`:html`<div class="mt-4 flex max-w-md gap-2"><input id="nl" type="email" aria-label="Email" placeholder="La tua email" class="w-full rounded-full px-4 py-2 text-sm text-zinc-900 outline-none"/><button onClick=${async()=>{const e=document.getElementById('nl').value.trim();if(!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(e))return;if(GESTIONALE.baseUrl){const r=await GESTIONALE.post('/api/newsletter',{email:e,sito_web:''});if(!r.ok){alert(r.errore||'Riprova più tardi.');return}}setOk(true)}} class="rounded-full bg-zinc-950 px-5 py-2 text-sm font-semibold">Iscriviti</button></div>`}</section>`}
 function Cart({prod,cart,setCart,...r}){const [cod,setCod]=useState(''),[ap,setAp]=useState(null),[er,setEr]=useState(false),live=!!GESTIONALE.baseUrl;const rows=Object.entries(cart).filter(([,q])=>q>0).map(([k,q])=>({p:prod.find(x=>x.sku===k),q})).filter(r=>r.p);
  const tot=rows.reduce((a,r)=>a+r.p.prezzo*r.q,0),chg=(p,d)=>setCart(c=>({...c,[p.sku]:Math.min(p.giacenza,Math.max(0,(c[p.sku]||0)+d))}));
@@ -430,24 +532,25 @@ function App(){
  <div class="annuncio bg-brand px-3 py-1.5 text-center text-xs font-semibold text-white">Spedizione gratuita sopra ${eur(FREE)} · Reso entro 14 giorni · Assistenza direttamente dal negozio</div>
  <a href=${wa('Ciao OVERSOUND, ho bisogno di aiuto!')} target="_blank" rel="noreferrer" aria-label="Scrivici su WhatsApp" class="fixed bottom-4 right-4 z-40 grid h-14 w-14 place-items-center rounded-full bg-[#25D366] text-white shadow-lg transition hover:scale-105 max-md:bottom-24"><${Ic} d=${P.wa} s=${28}/></a>
  ${toast&&html`<div role="status" class="fixed inset-x-0 bottom-20 z-50 mx-auto flex w-[92%] max-w-md items-center justify-between gap-3 rounded-full bg-zinc-950 px-5 py-3 text-sm text-white shadow-lg md:bottom-4"><span class="truncate">Aggiunto: ${toast}</span><a href="#/carrello" class="shrink-0 font-semibold underline">Vai al carrello</a></div>`}
- <header class="sticky top-0 z-30 border-b border-zinc-200 bg-white"><div class="mx-auto max-w-6xl px-4">
+ <header class="os-header sticky top-0 z-30 border-b border-zinc-200 bg-white"><div class="mx-auto max-w-6xl px-4">
   <div class="flex flex-wrap items-center gap-x-4 gap-y-2 py-3"><a href="#/" aria-label="OVERSOUND, home" class="flex items-center"><${Logo}/></a>
-   <div class="relative order-3 flex w-full items-center gap-2 rounded-full border border-zinc-300 px-4 focus-within:border-brand md:order-none md:w-auto md:flex-1"><${Ic} d=${P.search} s=${18} c="text-zinc-500"/>
+   <div class="os-search relative order-3 flex w-full items-center gap-2 rounded-full border border-zinc-300 px-4 focus-within:border-brand md:order-none md:w-auto md:flex-1"><${Ic} d=${P.search} s=${18} c="text-zinc-500"/>
     <input aria-label="Cerca prodotti" value=${f.q} onInput=${e=>setF({...f,q:e.target.value})} onFocus=${()=>setSug(true)} onBlur=${()=>setTimeout(()=>setSug(false),200)} onKeyDown=${e=>{if(e.key==='Enter'){location.hash='/catalogo';setSug(false)}}} placeholder="Cerca strumenti, marchi, accessori…" class="w-full bg-transparent py-2 text-sm outline-none"/>
     ${sug&&f.q.trim().length>1&&html`<ul class="absolute left-0 right-0 top-full z-40 mt-2 overflow-hidden rounded-2xl border border-zinc-200 bg-white shadow-xl">${prod?prod.filter(p=>(p.nome+p.marca).toLowerCase().includes(f.q.trim().toLowerCase())).slice(0,5).map(p=>html`<li key=${p.sku}><a href=${'#/prodotto/'+encodeURIComponent(p.sku)} class="flex items-center justify-between gap-3 px-4 py-2.5 text-sm hover:bg-zinc-50"><span class="truncate">${p.nome}</span><strong>${eur(p.prezzo)}</strong></a></li>`):null}<li><a href="#/catalogo" class="block border-t border-zinc-100 px-4 py-2.5 text-sm font-semibold text-brand">Vedi tutti i risultati</a></li></ul>`}</div>
    <nav class="ml-auto flex items-center gap-1">${[[P.cart,'Carrello',nCart,'#/carrello'],[P.heart,'Preferiti',favs.length,'#/preferiti'],[P.user,'Account',0,'#/account']].map(([d,l,n,u])=>html`<a href=${u} key=${l} aria-label=${l} class="relative rounded-full p-2 hover:bg-zinc-100"><${Ic} d=${d} s=${22}/>${n>0&&html`<span class="absolute -right-0.5 -top-0.5 grid h-4 min-w-4 place-items-center rounded-full bg-brand px-1 text-[10px] font-bold text-white">${n}</span>`}</a>`)}</nav></div>
   <div class="flex gap-2 overflow-x-auto pb-3">
    <select aria-label="Categoria" class=${sel} value=${f.cat} onChange=${e=>go({cat:e.target.value,sub:'',sub2:'',car:{}})}><option value="">Categorie</option>${CATS.map(c=>html`<option key=${c[0]} value=${c[0]}>${c[1]}</option>`)}</select>
-   <a href="#/catalogo?stato=usato" class="shrink-0 rounded-full border border-zinc-300 bg-white px-3 py-1.5 text-sm font-semibold hover:border-brand">Usato garantito</a><a href="#/catalogo?filtri=1" class="shrink-0 rounded-full border border-zinc-300 bg-white px-3 py-1.5 text-sm font-semibold hover:border-brand">Filtri${nFiltri(f)?' ('+nFiltri(f)+')':''}</a><a href="#/consigli" class="shrink-0 rounded-full bg-zinc-950 px-3 py-1.5 text-sm font-semibold text-white">Aiutami a scegliere</a></div></div></header>
+   <a href="#/catalogo?stato=usato" class="shrink-0 rounded-full border border-zinc-300 bg-white px-3 py-1.5 text-sm font-semibold hover:border-brand">Usato garantito</a><a href="#/catalogo?filtri=1" class="shrink-0 rounded-full border border-zinc-300 bg-white px-3 py-1.5 text-sm font-semibold hover:border-brand">Filtri${nFiltri(f)?' ('+nFiltri(f)+')':''}</a><a href="#/consigli" class="os-aiuto shrink-0 rounded-full bg-zinc-950 px-3 py-1.5 text-sm font-semibold text-white"><span class="os-spark" aria-hidden="true">✦</span> Aiutami a scegliere</a></div></div></header>
  <main class="mx-auto min-h-[60vh] max-w-6xl px-4 py-6">
   ${prod&&down&&html`<div class="mx-auto max-w-xl py-16 text-center"><h1 class="text-2xl font-black">Il negozio non è raggiungibile</h1><p class="mt-2 text-zinc-600">Stiamo avendo un problema momentaneo. Riprova tra qualche istante, oppure scrivici su WhatsApp.</p><div class="mt-5 flex flex-wrap justify-center gap-3"><button onClick=${load} class="rounded-full bg-brand px-6 py-3 font-semibold text-white">Riprova</button><a href=${wa('Ciao OVERSOUND, il sito non si apre.')} target="_blank" rel="noreferrer" class="rounded-full border border-brand px-6 py-3 font-semibold text-brand">Scrivici su WhatsApp</a></div></div>`}
   ${!prod&&html`<div class="grid grid-cols-2 gap-3 sm:grid-cols-4">${[1,2,3,4,5,6,7,8].map(k=>html`<div key=${k} class="aspect-[3/4] animate-pulse rounded-xl bg-zinc-100"/>`)}</div>`}
   ${ok&&!page&&html`<${Slider}/>
-   <section class="mt-10"><h2 class="mb-4 text-xl font-bold">Categorie</h2><div class="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-6">${CATS.map(c=>html`<a key=${c[0]} href=${'#/catalogo?cat='+encodeURIComponent(c[0])} class="flex flex-col items-center gap-3 rounded-xl border border-zinc-200 p-5 hover:border-brand hover:text-brand"><${CatIcon} nome=${c[0]} s=${34}/><span class="font-semibold">${c[1]}</span></a>`)}</div></section>
-   <section class="mt-10"><div class="mb-4 flex flex-wrap items-center justify-between gap-2"><div class="flex gap-2">${[['ev','In evidenza'],['off','Offerte'],['us','Usato garantito']].map(([k,l])=>html`<button key=${k} onClick=${()=>setTab(k)} class=${'rounded-full px-4 py-1.5 text-sm font-semibold '+(tab===k?'bg-brand text-white':'bg-zinc-100 hover:bg-zinc-200')}>${l}</button>`)}</div><a href="#/catalogo" class="text-sm font-semibold text-brand">Vedi tutto</a></div><${Grid} items=${prod.filter(p=>tab==='ev'?p.evidenza:tab==='off'?p.prezzoPrima:p.stato==='usato').slice(0,8)} ...${sh}/></section>
-   <section class="mt-10"><h2 class="mb-4 text-xl font-bold">Servizi</h2><div class="grid gap-4 md:grid-cols-3">${SERV.map(s=>html`<a key=${s.id} href=${'#/servizio/'+s.id} class="flex flex-col rounded-2xl border border-zinc-200 p-6 hover:border-brand"><h3 class="text-lg font-bold">${s.t}</h3><p class="mt-1 text-sm text-zinc-600">${s.s}</p><span class="mt-4 text-sm font-semibold text-brand">Scopri di più</span></a>`)}</div></section>
-   <section class="mt-10 overflow-hidden rounded-2xl bg-zinc-950 p-6 text-white sm:p-10"><h2 class="text-2xl font-black sm:text-4xl">Non sai cosa scegliere?</h2><p class="mt-2 max-w-md text-sm text-zinc-300">Rispondi a tre domande e ti consigliamo gli strumenti giusti per te.</p><a href="#/consigli" class="mt-4 inline-block rounded-full bg-brand px-6 py-3 font-semibold text-white hover:bg-brand2">Trova il tuo strumento</a></section>
-   <section class="mt-10 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">${TRUST.map(([d,t,x])=>html`<div key=${t} class="flex gap-3 rounded-xl bg-zinc-50 p-4"><${Ic} d=${d} s=${26} c="shrink-0 text-brand"/><div><h3 class="font-bold">${t}</h3><p class="text-sm text-zinc-600">${x}</p></div></div>`)}</section><${Newsletter}/>`}
+   <div class="os-marquee" aria-hidden="true"><div class="os-mq">${[0,1].map(k=>html`<span key=${k}>${CATS.map(c=>c[1]).concat(['Service per eventi','Assistenza tecnica','Usato garantito']).map((t,j)=>html`<b key=${j}>${t}<i>✦</i></b>`)}</span>`)}</div></div>
+   <section class="os-rv mt-10"><div class="os-h"><div><span class="os-eyebrow">Esplora il negozio</span><h2 class="mb-4 text-xl font-bold">Categorie</h2></div><a href="#/catalogo" class="os-more">Tutto il catalogo <span aria-hidden="true">→</span></a></div><div class="os-cats grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-6">${CATS.map(c=>html`<a key=${c[0]} href=${'#/catalogo?cat='+encodeURIComponent(c[0])} class="os-cat flex flex-col items-center gap-3 rounded-xl border border-zinc-200 p-5 hover:border-brand hover:text-brand"><span class="os-ic"><${CatIcon} nome=${c[0]} s=${34}/></span><span class="font-semibold">${c[1]}</span><span class="os-go" aria-hidden="true">→</span></a>`)}</div></section>
+   <section class="os-rv mt-10"><div class="os-h"><div><span class="os-eyebrow">Selezionati per te</span><h2 class="text-xl font-bold">I nostri prodotti</h2></div></div><div class="mb-4 flex flex-wrap items-center justify-between gap-2"><div class="os-tabs flex gap-2">${[['ev','In evidenza'],['off','Offerte'],['us','Usato garantito']].map(([k,l])=>html`<button key=${k} onClick=${()=>setTab(k)} class=${'rounded-full px-4 py-1.5 text-sm font-semibold '+(tab===k?'on bg-brand text-white':'bg-zinc-100 hover:bg-zinc-200')}>${l}</button>`)}</div><a href="#/catalogo" class="os-more text-sm font-semibold text-brand">Vedi tutto <span aria-hidden="true">→</span></a></div><${Grid} items=${prod.filter(p=>tab==='ev'?p.evidenza:tab==='off'?p.prezzoPrima:p.stato==='usato').slice(0,8)} ...${sh}/></section>
+   <section class="os-rv mt-10"><div class="os-h"><div><span class="os-eyebrow">Non solo negozio</span><h2 class="mb-4 text-xl font-bold">Servizi</h2></div></div><div class="grid gap-4 md:grid-cols-3">${SERV.map((s,k)=>html`<a key=${s.id} href=${'#/servizio/'+s.id} class="os-serv flex flex-col rounded-2xl border border-zinc-200 p-6 hover:border-brand"><span class="os-num">${String(k+1).padStart(2,'0')}</span><h3 class="text-lg font-bold">${s.t}</h3><p class="mt-1 text-sm text-zinc-600">${s.s}</p><span class="os-more mt-4 text-sm font-semibold text-brand">Scopri di più <span aria-hidden="true">→</span></span></a>`)}</div></section>
+   <section class="os-trova os-rv relative mt-10 overflow-hidden rounded-2xl bg-zinc-950 p-6 text-white sm:p-10"><span class="os-beam" aria-hidden="true"></span><span class="os-beam b2" aria-hidden="true"></span><span class="os-eyebrow os-eyebrow-l">Consulenza gratuita</span><h2 class="text-2xl font-black sm:text-4xl">Non sai cosa scegliere?</h2><p class="mt-2 max-w-md text-sm text-zinc-300">Rispondi a tre domande e ti consigliamo gli strumenti giusti per te.</p><a href="#/consigli" class="mt-4 inline-block rounded-full bg-brand px-6 py-3 font-semibold text-white hover:bg-brand2">Trova il tuo strumento</a></section>
+   <section class="os-rv mt-10 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">${TRUST.map(([d,t,x])=>html`<div key=${t} class="os-trust flex gap-3 rounded-xl bg-zinc-50 p-4"><span class="os-ti"><${Ic} d=${d} s=${22} c="shrink-0 text-brand"/></span><div><h3 class="font-bold">${t}</h3><p class="text-sm text-zinc-600">${x}</p></div></div>`)}</section><${Newsletter}/>`}
   ${ok&&page==='catalogo'&&html`<div class="mb-3 flex items-center justify-between"><h1 class="text-2xl font-bold">${f.stato==='usato'&&!f.cat?'Usato garantito':f.sub2||f.sub||f.cat||'Catalogo'} <span class="text-base font-normal text-zinc-500">(${lista.length})</span></h1><button onClick=${()=>setF(F0)} class="text-sm font-semibold text-brand">Azzera tutto</button></div>
    ${f.cat&&html`<p class="mb-3 text-sm text-zinc-500"><button onClick=${()=>setF({...F0,q:f.q})} class="hover:text-brand">Tutte le categorie</button> › <button onClick=${()=>setF({...f,sub:'',sub2:''})} class="capitalize hover:text-brand">${f.cat}</button>${f.sub&&html` › <button onClick=${()=>setF({...f,sub2:''})} class="hover:text-brand">${f.sub}</button>`}${f.sub2&&html` › ${f.sub2}`}</p>`}
    ${!f.cat&&html`<${SubNav} titolo="Categorie" items=${CATS.map(c=>[c[0],c[1],prod.filter(p=>p.categoria===c[0]).length])} cur=${''} onSel=${n=>setF({...f,cat:n,sub:'',sub2:'',car:{}})}/>`}
@@ -481,7 +584,7 @@ function App(){
   ${page==='ordine'&&arg&&html`<${Ordine} num=${arg} t=${params.get('t')} setCart=${setCart}/>`}
   ${page==='servizio'&&html`<${Servizio} id=${arg}/>`}
  </main>
- <footer class="mt-16 bg-zinc-950 text-zinc-300"><div class="mx-auto grid max-w-6xl gap-8 px-4 py-12 md:grid-cols-3">
+ <footer class="os-footer mt-16 bg-zinc-950 text-zinc-300"><div class="mx-auto grid max-w-6xl gap-8 px-4 py-12 md:grid-cols-3">
   <div><${Logo} foot=${true}/><h2 class="mt-4 font-bold text-white">${PAGINE.some(x=>x.slug==='chi-siamo')?html`<a href="#/info/chi-siamo" class="hover:underline">Chi siamo</a>`:'Chi siamo'}</h2><p class="mt-2 text-sm">${AZIENDA.chi||'Strumenti musicali, audio e luci, service per eventi e assistenza tecnica.'}</p><p class="mt-2 text-xs text-zinc-500">${AZIENDA.piva}</p></div>
   <div class="space-y-3 text-sm"><h2 class="font-bold text-white">Dove siamo</h2><p class="flex gap-2"><${Ic} d=${P.pin} s=${18} c="shrink-0 text-brand"/>${AZIENDA.indirizzo}</p><p class="flex gap-2"><${Ic} d=${P.mail} s=${18} c="shrink-0 text-brand"/>${AZIENDA.email}</p><p class="flex flex-wrap gap-x-4 gap-y-1 pt-2">${(PAGINE.length?PAGINE.filter(x=>x.slug!=='chi-siamo'):[{slug:'spedizioni',titolo:'Spedizioni e resi'},{slug:'privacy',titolo:'Privacy e cookie'}]).map(x=>html`<a key=${x.slug} href=${'#/info/'+encodeURIComponent(x.slug)} class="underline">${x.titolo}</a>`)}</p></div>
   <div class="text-sm"><h2 class="font-bold text-white">Orari</h2><dl class="mt-3 space-y-1">${AZIENDA.orari.map(([d,o])=>html`<div key=${d} class="flex justify-between gap-4"><dt>${d}</dt><dd>${o}</dd></div>`)}</dl></div></div>
