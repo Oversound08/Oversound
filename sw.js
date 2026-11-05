@@ -1,7 +1,7 @@
 /* OVERSOUND – app installabile: il sito si apre anche con connessione debole.
    Pagine: prima dalla rete (sempre aggiornate), se manca la rete dalla copia salvata.
    Librerie e icone: dalla copia salvata. Prezzi, ordini e account (gestionale): sempre dalla rete. */
-const V = 'oversound-v3', BASE = ['/', '/index.html', '/manifest.webmanifest', '/icone/logo.webp', '/icone/app-192.png', '/icone/app-512.png'];
+const V = 'oversound-v4', BASE = ['/', '/index.html', '/manifest.webmanifest', '/icone/logo.webp', '/icone/app-192.png', '/icone/app-512.png'];
 self.addEventListener('install', e => { e.waitUntil(caches.open(V).then(c => c.addAll(BASE)).then(() => self.skipWaiting())); });
 self.addEventListener('activate', e => { e.waitUntil(caches.keys().then(k => Promise.all(k.filter(x => x !== V).map(x => caches.delete(x)))).then(() => self.clients.claim())); });
 self.addEventListener('fetch', e => {
