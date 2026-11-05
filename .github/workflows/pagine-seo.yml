@@ -1,0 +1,40 @@
+# Pagine dei prodotti per Google: ogni 6 ore (e quando cambia il sito) legge i prodotti dal gestionale,
+# crea oversound.it/prodotto/nome-prodotto/ e aggiorna sitemap.xml. Si può avviare anche a mano da «Actions».
+name: Pagine prodotti per Google
+on:
+  schedule:
+    - cron: "17 */6 * * *"
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths: [index.html, strumenti/genera_pagine.py]
+permissions:
+  contents: write
+  pages: write
+concurrency:
+  group: pagine-seo
+  cancel-in-progress: false
+jobs:
+  genera:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Crea le pagine dei prodotti
+        run: python3 strumenti/genera_pagine.py
+      - name: Pubblica se qualcosa è cambiato
+        run: |
+          git config user.name "OVERSOUND automatico"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A prodotto sitemap.xml
+          if git diff --cached --quiet; then echo "Niente da aggiornare"; exit 0; fi
+          git commit -m "Pagine dei prodotti aggiornate dal gestionale"
+          git pull --rebase origin main
+          git push origin HEAD:main
+      - name: Aggiorna il sito pubblicato
+        continue-on-error: true
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh api -X POST "repos/${{ github.repository }}/pages/builds" || true

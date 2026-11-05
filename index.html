@@ -3,7 +3,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>OVERSOUND – Strumenti musicali, audio e luci</title>
 <meta name="description" content="OVERSOUND: strumenti musicali, audio, luci, service per eventi, trasporto e accordatura pianoforte, riparazioni.">
-<meta name="robots" content="index,follow"><link rel="canonical" href="https://oversound.it/"><meta property="og:type" content="website"><meta property="og:title" content="OVERSOUND – Strumenti musicali, audio e luci"><meta property="og:description" content="Strumenti musicali, audio, luci, service per eventi, trasporto e accordatura pianoforte, riparazioni."><meta property="og:url" content="https://oversound.it/">
+<meta name="robots" content="index,follow"><link rel="canonical" href="https://oversound.it/">
+<script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"Organization","@id":"https://oversound.it/#org","name":"OVERSOUND","alternateName":"OVERSOUND Damiano Perri – Strumenti musicali","url":"https://oversound.it/","logo":"https://oversound.it/icone/app-512.png"},{"@type":"WebSite","name":"OVERSOUND","url":"https://oversound.it/","publisher":{"@id":"https://oversound.it/#org"},"inLanguage":"it-IT"}]}</script><meta property="og:type" content="website"><meta property="og:title" content="OVERSOUND – Strumenti musicali, audio e luci"><meta property="og:description" content="Strumenti musicali, audio, luci, service per eventi, trasporto e accordatura pianoforte, riparazioni."><meta property="og:url" content="https://oversound.it/">
 <meta name="theme-color" content="#0a0a0b">
 <link rel="preload" as="image" href="/icone/logo.webp"><link rel="manifest" href="/manifest.webmanifest"><link rel="apple-touch-icon" href="/icone/app-apple-180.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="OVERSOUND"><meta name="apple-mobile-web-app-status-bar-style" content="default">
 <link rel="icon" href="/favicon.ico?v=3" sizes="any"><link rel="icon" type="image/png" sizes="32x32" href="/icone/favicon-32.png?v=3"><link rel="icon" type="image/png" sizes="48x48" href="/icone/app-48.png?v=3"><link rel="icon" type="image/png" sizes="96x96" href="/icone/favicon-96.png?v=3"><link rel="icon" type="image/png" sizes="192x192" href="/icone/app-192.png?v=3">
@@ -541,7 +542,7 @@ function Profilo({p,ind,inp,lab,btn,busy,salva,cambiaPw}){
   <button disabled=${busy} onClick=${()=>{cambiaPw(pw);setPw({vecchia:'',nuova:''})}} class="w-full rounded-full border border-brand px-6 py-3 font-semibold text-brand">Cambia password</button></div></div>`}
 
 function App(){
- const [h,setH]=useState(location.hash.slice(1)||'/');useEffect(()=>{const f=()=>{setH(location.hash.slice(1)||'/');scrollTo(0,0)};addEventListener('hashchange',f);return()=>removeEventListener('hashchange',f)},[]);
+ const [h,setH]=useState(location.hash.slice(1)||window.OS_ROUTE||'/');useEffect(()=>{const f=()=>{setH(location.hash.slice(1)||'/');scrollTo(0,0)};addEventListener('hashchange',f);return()=>removeEventListener('hashchange',f)},[]);
  const [path,qs]=h.split('?');const [page,arg0]=path.split('/').filter(Boolean),arg=arg0?decodeURIComponent(arg0):arg0;const params=new URLSearchParams(qs);
  const [prod,setProd]=useState(null),[sync,setSync]=useState(null),[err,setErr]=useState(false);
  const load=async()=>{setProd(null);let p,r,er=false;
@@ -577,11 +578,16 @@ function App(){
  useEffect(()=>{const T0='OVERSOUND – Strumenti musicali, audio e luci',D0='OVERSOUND: strumenti musicali, audio, luci, service per eventi, trasporto e accordatura pianoforte, riparazioni.';
   const m=document.querySelector('meta[name=description]');let ld=document.getElementById('ld-prodotto');
   if(page==='prodotto'&&pr){const d=det||{};document.title=d.seo_titolo||(pr.nome+' | OVERSOUND');if(m)m.setAttribute('content',d.descrizione_breve||((pr.marca&&!pr.nome.toLowerCase().includes(pr.marca.toLowerCase())?pr.marca+' ':'')+pr.nome+' su OVERSOUND'));
-   const j={'@context':'https://schema.org','@type':'Product',name:pr.nome,sku:pr.sku,image:(d.foto||[]).map(f=>f.url).concat(d.foto?[]:(pr.immagine?[pr.immagine]:[])),offers:{'@type':'Offer',price:(+pr.prezzo||0).toFixed(2),priceCurrency:'EUR',url:location.href,
+   const cu=pr.slug?'https://oversound.it/prodotto/'+encodeURIComponent(pr.slug)+'/':location.href;canon(cu);
+   const j={'@context':'https://schema.org','@type':'Product',name:pr.nome,sku:pr.sku,image:(d.foto||[]).map(f=>f.url).concat(d.foto?[]:(pr.immagine?[pr.immagine]:[])),offers:{'@type':'Offer',price:(+pr.prezzo||0).toFixed(2),priceCurrency:'EUR',url:cu,
     availability:'https://schema.org/'+(pr.inMag?'InStock':pr.giacenza>0?'BackOrder':'OutOfStock'),itemCondition:'https://schema.org/'+(pr.stato==='usato'?'UsedCondition':'NewCondition')}};
    if(pr.marca)j.brand={'@type':'Brand',name:pr.marca};if(d.descrizione_breve)j.description=d.descrizione_breve;if(d.ean&&/^\d{8,14}$/.test(d.ean))j.gtin=d.ean;
    if(!ld){ld=document.createElement('script');ld.type='application/ld+json';ld.id='ld-prodotto';document.head.appendChild(ld)}ld.textContent=JSON.stringify(j)}
-  else{document.title=T0;if(m)m.setAttribute('content',D0);if(ld)ld.remove()}},[page,pr,det]);
+  else{document.title=T0;if(m)m.setAttribute('content',D0);if(ld)ld.remove();canon('https://oversound.it/')}},[page,pr,det]);
+ useEffect(()=>{if(!prod)return;let x=document.getElementById('ld-negozio');if(!x){x=document.createElement('script');x.type='application/ld+json';x.id='ld-negozio';document.head.appendChild(x)}
+  const a=AZIENDA,j={'@context':'https://schema.org','@type':'MusicStore',name:'OVERSOUND',url:'https://oversound.it/',logo:'https://oversound.it/icone/app-512.png',image:'https://oversound.it/icone/logo.webp'};
+  if(a.indirizzo&&!/esempio/i.test(a.indirizzo))j.address=a.indirizzo;if(a.email)j.email=a.email;if(a.wa&&a.wa!=='390000000000')j.telephone='+'+String(a.wa).replace(/^\+/,'');if(a.email==='info@oversound.it'&&/esempio/i.test(a.indirizzo||''))delete j.email;
+  const s=Object.values(a.social||{}).filter(u=>u&&!/^https:\/\/(www\.)?(instagram|facebook|tiktok)\.com\/?$/.test(u));if(s.length)j.sameAs=s;x.textContent=JSON.stringify(j)},[prod]);
  return html`<div>
  <div class=${DEMO_MODE?'flex items-center justify-center gap-2 bg-zinc-900 px-3 py-1.5 text-xs text-white':'hidden'}><${Ic} d=${P.sync} s=${14} c=${prod?'':'animate-spin'}/>
   ${prod?(GESTIONALE.baseUrl?(err?'Gestionale non raggiungibile · dati di esempio':'Collegato al gestionale'):'Anteprima · dati di esempio')+' · aggiornati alle '+sync.toLocaleTimeString('it-IT',{hour:'2-digit',minute:'2-digit'}):'Connessione al gestionale…'}
@@ -649,6 +655,7 @@ function App(){
    <div class="flex gap-2">${[[P.ig,'Instagram',(AZIENDA.social||{}).instagram||'https://instagram.com/'],[P.fb,'Facebook',(AZIENDA.social||{}).facebook||'https://facebook.com/'],[P.tt,'TikTok',(AZIENDA.social||{}).tiktok||'https://tiktok.com/'],[P.wa,'WhatsApp',wa('Ciao OVERSOUND!')]].map(([d,l,u])=>html`<a key=${l} href=${u} target="_blank" rel="noreferrer" aria-label=${l} class="rounded-full bg-zinc-800 p-2 hover:bg-brand hover:text-white"><${Ic} d=${d} s=${18}/></a>`)}</div></div></div></footer>
  ${page!=='prodotto'&&html`<div class="tabspace"></div><nav class="tabbar" aria-label="Navigazione">${[['#/','Home','M3 11l9-8 9 8M5 10v10h5v-6h4v6h5V10',!page,0],['#/catalogo','Catalogo','M4 4h7v7H4zM13 4h7v7h-7zM4 13h7v7H4zM13 13h7v7h-7z',page==='catalogo',0],['#/catalogo','Cerca',P.search,false,0],['#/preferiti','Preferiti',P.heart,page==='preferiti',favs.length],['#/carrello','Carrello',P.cart,page==='carrello'||page==='cassa',nCart]].map(([u,l,d,on,n])=>html`<a key=${l} href=${u} class=${on?'on':''} onClick=${l==='Cerca'?(e=>{e.preventDefault();window.scrollTo(0,0);const i=document.querySelector('input[aria-label="Cerca prodotti"]');if(i)i.focus()}):undefined}><${Ic} d=${d} s=${22}/>${l}${n>0&&html`<span class="bd">${n}</span>`}</a>`)}</nav>`}
  ${DESK&&html`<div class="desk-av">Stai vedendo il sito nella versione per computer. Nel menu del browser (⋮ o «aA») togli la spunta a <b>«Sito desktop»</b> per vederlo adattato al telefono.</div>`}</div>`}
+const canon=u=>{let l=document.querySelector('link[rel=canonical]');if(!l){l=document.createElement('link');l.rel='canonical';document.head.appendChild(l)}l.href=u};
 const DESK=(()=>{try{return('ontouchstart' in window||navigator.maxTouchPoints>0)&&Math.min(screen.width,screen.height)<600&&window.innerWidth>900}catch(e){return false}})();
 class EB extends React.Component{constructor(p){super(p);this.state={e:null}}static getDerivedStateFromError(e){return{e}}
  render(){return this.state.e?html`<div class="p-10 text-center"><p class="mb-3 font-bold">Qualcosa non ha funzionato.</p><button class="rounded-full bg-brand px-5 py-2 text-white" onClick=${()=>{location.hash='/';location.reload()}}>Ricarica il sito</button></div>`:this.props.children}}
