@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="it"><head><meta charset="utf-8">
+<html lang="it"><head><meta charset="utf-8"><script>try{var t=JSON.parse(localStorage.getItem("os-tema")||"null");if(t&&t.css&&!/[?&]tema=/.test(location.search)){var s=document.createElement("style");s.id="tema-sito";s.textContent=t.css;document.head.appendChild(s);document.documentElement.dataset.tema=t.id}}catch(e){}</script>
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>OVERSOUND – Strumenti musicali, audio, luci e service</title>
 <meta name="description" content="Negozio di strumenti musicali: chitarre, tastiere, audio, luci, service per eventi, riparazioni e usato garantito. Ordina online o vieni in negozio.">
@@ -383,6 +383,11 @@ function Cart({prod,cart,setCart,...r}){const [cod,setCod]=useState(''),[ap,setA
   <a href=${wa(msg)} target="_blank" rel="noreferrer" class="mt-2 flex items-center justify-center gap-2 text-sm font-semibold text-zinc-600"><${Ic} d=${P.wa} s=${18}/>Preferisci ordinare su WhatsApp?</a></div>
  <h2 class="mb-3 mt-8 text-lg font-bold">Completa il tuo ordine</h2><${Grid} items=${prod.filter(p=>!rows.some(x=>x.p.sku===p.sku)&&p.giacenza>0&&(/access|microf/i.test(p.categoria)||rows.some(x=>x.p.categoria===p.categoria))).slice(0,4)} ...${r}/></div>`}
 /* modi di consegna decisi nel gestionale: alcuni solo per certe province o CAP */
+/* layout del sito scelto nel gestionale (Sito web > Layout del sito); ?tema=nome = anteprima senza attivarlo */
+function applicaTema(t){try{const q=new URLSearchParams(location.search).get('tema');
+ const metti=x=>{if(!x)return;let s=document.getElementById('tema-sito');if(!s){s=document.createElement('style');s.id='tema-sito';document.head.appendChild(s)}s.textContent=x.css||'';document.documentElement.dataset.tema=x.id||''};
+ if(q){fetch(GESTIONALE.baseUrl+'/api/tema/'+encodeURIComponent(q)).then(r=>r.ok?r.json():null).then(metti).catch(()=>{});return}
+ if(!t)return;metti(t);localStorage.setItem('os-tema',JSON.stringify({id:t.id,css:t.css||''}))}catch(e){}}
 const consOk=(c,prov,cap)=>c.zona==='province'?(c.province||[]).includes((prov||'').trim().toUpperCase()):c.zona==='cap'?(c.cap||[]).some(x=>(cap||'').trim().startsWith(x)):true;
 const consCosto=(c,tot)=>c.gratis_sopra>0&&tot>=c.gratis_sopra?0:+c.prezzo||0;
 function Cassa({prod,cart,setCart}){
@@ -561,7 +566,7 @@ function App(){
  const load=async()=>{setProd(null);let p,r,er=false;
   try{if(!GESTIONALE.baseUrl){p=DEMO.map(x=>({...x}));r=DEMO_REV.map(x=>({...x}))}
    else{const d=await GESTIONALE.carica(),V=(d.vet&&d.vet.vetrina)||{},c=d.cfg||{};p=d.lista.map(x=>normP(x,V));r=(d.rec||[]).map(x=>({...x,sku:x.codice}));
-    if(Array.isArray(c.consegne))CONSEGNE=c.consegne;if(c.spedizione_gratis_sopra!=null)FREE=+c.spedizione_gratis_sopra;if(c.spedizione_costo!=null)COSTO=+c.spedizione_costo;if(Array.isArray(c.metodi)&&c.metodi.length)PAGAM=c.metodi;else if(Array.isArray(c.pagamenti)&&c.pagamenti.length)PAGAM=c.pagamenti.map(k=>({chiave:k,tipo:k,nome:k==='contrassegno'?'Contrassegno (paghi alla consegna)':'Bonifico bancario',descrizione:''}));ISTR=c.bonifico_istruzioni||'';
+    applicaTema(c.tema);if(Array.isArray(c.consegne))CONSEGNE=c.consegne;if(c.spedizione_gratis_sopra!=null)FREE=+c.spedizione_gratis_sopra;if(c.spedizione_costo!=null)COSTO=+c.spedizione_costo;if(Array.isArray(c.metodi)&&c.metodi.length)PAGAM=c.metodi;else if(Array.isArray(c.pagamenti)&&c.pagamenti.length)PAGAM=c.pagamenti.map(k=>({chiave:k,tipo:k,nome:k==='contrassegno'?'Contrassegno (paghi alla consegna)':'Bonifico bancario',descrizione:''}));ISTR=c.bonifico_istruzioni||'';
     if(d.pag&&Array.isArray(d.pag.pagine))PAGINE=d.pag.pagine;const v=d.vet;if(v){const a=v.azienda||{};Object.assign(AZIENDA,{chi:a.chi_siamo||'',logo:a.logo||'',wa:a.whatsapp||AZIENDA.wa,email:a.email||AZIENDA.email,indirizzo:a.indirizzo||AZIENDA.indirizzo,piva:a.piva||AZIENDA.piva,orari:(a.orari&&a.orari.length)?a.orari:AZIENDA.orari,social:a.social||{}});
      if(v.tempi_consegna)TEMPI=v.tempi_consegna;if(v.slide&&v.slide.length)SLIDES.splice(0,SLIDES.length,...v.slide.map(normS))}
     if(c.account===false)ACCOUNT_ON=false;if(d.fil&&Array.isArray(d.fil.filtri))FILTRI=d.fil.filtri;
