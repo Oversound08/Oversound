@@ -67,11 +67,6 @@ def negozio(az):
     return j
 
 
-def citta(az):
-    m = re.search(r"\d{5}\s+([^,(]+?)\s*(?:\(|,|$)", str(az.get("indirizzo") or ""))
-    return m.group(1).strip() if m and not re.search(r"esempio", str(az.get("indirizzo")), re.I) else "Acri"
-
-
 def js(o): return json.dumps(o, ensure_ascii=False).replace("</", "<\\/")
 
 
@@ -122,10 +117,10 @@ def pagina(tpl, p, d, az):
 
 
 def pagina_categoria(tpl, cat, prodotti, az):
-    sl = slug_cat(cat); url = f"{SITO}/categoria/{sl}/"; ct = citta(az)
-    tit = f"{cat} ad {ct} – negozio e vendita online | OVERSOUND" if ct[:1].upper() in "AEIOU" else f"{cat} a {ct} – negozio e vendita online | OVERSOUND"
+    sl = slug_cat(cat); url = f"{SITO}/categoria/{sl}/"
+    tit = f"{cat} – negozio e vendita online | OVERSOUND"
     marche = sorted({p.get("marca") for p in prodotti if p.get("marca")})[:6]
-    desc = (f"{cat} da OVERSOUND, negozio di strumenti musicali a {ct}: {len(prodotti)} prodotti" + (f" ({', '.join(marche)})" if marche else "") + ". Spedizione in Italia o ritiro in negozio.")[:160]
+    desc = (f"{cat} da OVERSOUND, negozio di strumenti musicali: {len(prodotti)} prodotti" + (f" ({', '.join(marche)})" if marche else "") + ". Spedizione in Italia o ritiro in negozio.")[:160]
     lista = {"@context": "https://schema.org", "@type": "ItemList", "name": cat, "numberOfItems": len(prodotti),
              "itemListElement": [{"@type": "ListItem", "position": i + 1, "url": f"{SITO}/prodotto/{p['slug']}/", "name": p["nome"]} for i, p in enumerate(prodotti[:100])]}
     bric = {"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "Home", "item": SITO + "/"}, {"@type": "ListItem", "position": 2, "name": cat, "item": url}]}
