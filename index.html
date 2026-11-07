@@ -144,6 +144,21 @@ a.bg-brand:hover,button.bg-brand:not(:disabled):hover{box-shadow:0 10px 24px -10
 @media (display-mode:standalone){.annuncio{padding-top:calc(env(safe-area-inset-top,0px) + 6px)!important}}
 @media (max-width:640px){.os-hero{border-radius:22px}.os-h{align-items:flex-start;flex-direction:column;gap:6px}.os-serv{min-height:0}.os-marquee{margin-top:16px}.os-hero-t{max-width:none!important}}
 @media (prefers-reduced-motion:reduce){.os-mq,.os-beam,.os-dot.on::after,.annuncio::before,.os-wave path{animation:none!important}.os-rv{animation:none!important}}
+
+/* fascia evento (layout del sito con giorni e promozione) */
+#os-evento{--ev-acc:#ffc83d;position:relative;z-index:41;display:flex;align-items:center;justify-content:center;gap:10px 14px;flex-wrap:wrap;padding:9px 16px;background:linear-gradient(90deg,#050506,#1a0200 50%,#050506);color:#fff;font:600 13px/1.2 "Inter",system-ui,sans-serif;overflow:hidden;text-decoration:none}
+#os-evento::after{content:"";position:absolute;inset:0;background:linear-gradient(100deg,transparent 30%,rgba(255,255,255,.09) 50%,transparent 70%);transform:translateX(-100%);animation:ev-luce 4.5s ease-in-out infinite;pointer-events:none}
+@keyframes ev-luce{60%,100%{transform:translateX(100%)}}
+#os-evento .ev-t{font:900 15px/1 "Archivo","Inter",sans-serif;letter-spacing:.14em;text-transform:uppercase;color:var(--ev-acc)}
+#os-evento .ev-s{background:var(--os-r,#e10600);color:#fff;border-radius:999px;padding:4px 10px;font:800 13px/1 "Archivo","Inter",sans-serif}
+#os-evento .ev-p{color:#d4d4d8}
+#os-evento .ev-c{display:inline-flex;align-items:center;gap:4px;font-variant-numeric:tabular-nums}#os-evento .ev-c:empty{display:none}
+#os-evento .ev-c i{font-style:normal;color:#a1a1aa;margin-right:4px}
+#os-evento .ev-c b{background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.14);border-radius:6px;padding:3px 6px;font:800 13px/1 "Archivo","Inter",sans-serif;min-width:34px;text-align:center}
+#os-evento .ev-c small{font-size:10px;color:#a1a1aa;margin-left:1px}
+#os-evento .ev-go{color:var(--ev-acc);font-weight:700}
+@media (max-width:640px){#os-evento{gap:6px 10px;padding:8px 12px;font-size:12px}#os-evento .ev-go,#os-evento .ev-c i{display:none}#os-evento .ev-c b{min-width:28px;padding:3px 4px;font-size:12px}}
+@media (prefers-reduced-motion:reduce){#os-evento::after{animation:none}}
 </style></head>
 <body><div id="root"><div style="min-height:100vh;display:grid;place-items:center;background:#fff"><img src="/icone/logo.webp" alt="OVERSOUND" width="900" height="196" style="width:min(300px,75vw);height:auto;animation:os-car 1.2s ease-in-out infinite alternate"></div></div>
 <script>
@@ -384,8 +399,20 @@ function Cart({prod,cart,setCart,...r}){const [cod,setCod]=useState(''),[ap,setA
  <h2 class="mb-3 mt-8 text-lg font-bold">Completa il tuo ordine</h2><${Grid} items=${prod.filter(p=>!rows.some(x=>x.p.sku===p.sku)&&p.giacenza>0&&(/access|microf/i.test(p.categoria)||rows.some(x=>x.p.categoria===p.categoria))).slice(0,4)} ...${r}/></div>`}
 /* modi di consegna decisi nel gestionale: alcuni solo per certe province o CAP */
 /* layout del sito scelto nel gestionale (Sito web > Layout del sito); ?tema=nome = anteprima senza attivarlo */
+/* Fascia dell'evento (Black Friday, saldi…): giorni, sconto e conto alla rovescia, decisi nel gestionale (Layout del sito) */
+function mostraEvento(ev){try{let el=document.getElementById('os-evento');clearInterval(window.__evT);
+ if(!ev||!ev.titolo){if(el)el.remove();document.documentElement.classList.remove('con-evento');return}
+ if(!el){el=document.createElement('a');el.id='os-evento';const r=document.getElementById('root');r.parentNode.insertBefore(el,r)}
+ el.href=ev.link||'#/catalogo';const esc=t=>String(t||'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+ el.innerHTML='<span class="ev-t">'+esc(ev.titolo)+'</span>'+(ev.sconto?'<span class="ev-s">'+esc(ev.sconto)+'</span>':'')+(ev.periodo?'<span class="ev-p">'+esc(ev.periodo)+'</span>':'')+'<span class="ev-c" aria-live="off"></span><span class="ev-go">Scopri →</span>';
+ document.documentElement.classList.add('con-evento');const c=el.querySelector('.ev-c'),pz=n=>String(n).padStart(2,'0');
+ const tic=()=>{const ora=Date.now(),ini=ev.inizio?new Date(ev.inizio).getTime():0,fin=ev.fine?new Date(ev.fine).getTime():0;let t,lab;
+  if(ini&&ora<ini){t=ini-ora;lab='Inizia tra'}else if(fin&&ora<=fin){t=fin-ora;lab='Finisce tra'}else{c.textContent='';return}
+  const g=Math.floor(t/864e5),h=Math.floor(t/36e5)%24,m=Math.floor(t/6e4)%60,s_=Math.floor(t/1e3)%60;
+  c.innerHTML='<i>'+lab+'</i>'+(g?'<b>'+g+'<small>g</small></b>':'')+'<b>'+pz(h)+'<small>h</small></b><b>'+pz(m)+'<small>m</small></b><b>'+pz(s_)+'<small>s</small></b>'};
+ tic();window.__evT=setInterval(tic,1000)}catch(e){}}
 function applicaTema(t){try{const q=new URLSearchParams(location.search).get('tema');
- const metti=x=>{if(!x)return;let s=document.getElementById('tema-sito');if(!s){s=document.createElement('style');s.id='tema-sito';document.head.appendChild(s)}s.textContent=x.css||'';document.documentElement.dataset.tema=x.id||''};
+ const metti=x=>{if(!x)return;let s=document.getElementById('tema-sito');if(!s){s=document.createElement('style');s.id='tema-sito';document.head.appendChild(s)}s.textContent=x.css||'';document.documentElement.dataset.tema=x.id||'';mostraEvento(x.evento)};
  if(q){fetch(GESTIONALE.baseUrl+'/api/tema/'+encodeURIComponent(q)).then(r=>r.ok?r.json():null).then(metti).catch(()=>{});return}
  if(!t)return;metti(t);localStorage.setItem('os-tema',JSON.stringify({id:t.id,css:t.css||''}))}catch(e){}}
 const consOk=(c,prov,cap)=>c.zona==='province'?(c.province||[]).includes((prov||'').trim().toUpperCase()):c.zona==='cap'?(c.cap||[]).some(x=>(cap||'').trim().startsWith(x)):true;
