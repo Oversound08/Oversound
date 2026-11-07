@@ -28,7 +28,7 @@ jobs:
         run: |
           git config user.name "OVERSOUND automatico"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add -A prodotto sitemap.xml
+          git add -A prodotto categoria sitemap.xml index.html
           if git diff --cached --quiet; then echo "Niente da aggiornare"; exit 0; fi
           git commit -m "Pagine dei prodotti aggiornate dal gestionale"
           git pull --rebase origin main
