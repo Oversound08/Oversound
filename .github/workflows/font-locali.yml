@@ -1,0 +1,41 @@
+# Font del sito serviti da oversound.it invece che da Google (privacy dei visitatori).
+# Parte quando cambia lo script o a mano da «Actions»; poi rifà le pagine dei prodotti con i font locali.
+name: Font sul sito
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths: [strumenti/font_locali.py, .github/workflows/font-locali.yml]
+permissions:
+  contents: write
+  pages: write
+concurrency:
+  group: pagine-seo
+  cancel-in-progress: false
+jobs:
+  font:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Scarica i font e li mette sul sito
+        run: python3 strumenti/font_locali.py
+      - name: Rifà le pagine dei prodotti
+        continue-on-error: true
+        run: python3 strumenti/genera_pagine.py
+      - name: Pubblica
+        run: |
+          git config user.name "OVERSOUND automatico"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A font index.html prodotto categoria sitemap.xml
+          if git diff --cached --quiet; then echo "Niente da aggiornare"; exit 0; fi
+          git commit -m "Font serviti da oversound.it (non piu' da Google)"
+          git pull --rebase origin main
+          git push origin HEAD:main
+      - name: Aggiorna il sito pubblicato
+        continue-on-error: true
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh api -X POST "repos/${{ github.repository }}/pages/builds" || true
