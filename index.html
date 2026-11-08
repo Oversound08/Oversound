@@ -177,6 +177,24 @@ html.splash-on,html.splash-on body{overflow:hidden}
 @keyframes sp-eq{from{transform:scaleY(.18)}to{transform:scaleY(1)}}
 @keyframes sp-in{to{opacity:1}}
 @media (prefers-reduced-motion:reduce){#os-splash *{animation:none!important;opacity:1!important}#os-splash .sp-r{display:none}}
+
+.app-guida{position:fixed;inset:0;z-index:60;background:rgba(10,10,11,.55);-webkit-backdrop-filter:blur(4px);backdrop-filter:blur(4px);display:flex;align-items:flex-end;justify-content:center;animation:gd-in .25s ease;transition:opacity .3s}
+.app-guida.via{opacity:0}@keyframes gd-in{from{opacity:0}}
+.app-guida .gs{position:relative;width:100%;max-width:440px;background:#fff;border-radius:26px 26px 0 0;padding:26px 20px calc(110px + env(safe-area-inset-bottom,0px));text-align:center;animation:app-su .35s var(--os-ease)}
+@media (min-width:600px){.app-guida{align-items:center}.app-guida .gs{border-radius:26px;padding-bottom:24px}}
+.app-guida .gx{position:absolute;right:14px;top:12px;font-size:20px;color:#71717a;padding:6px}
+.app-guida .gi{width:64px;height:64px;border-radius:16px;margin:0 auto 10px;box-shadow:0 10px 24px -10px rgba(0,0,0,.35)}
+.app-guida h3{font:800 21px/1.15 "Archivo","Inter",sans-serif;letter-spacing:-.02em}.app-guida .gp{color:#52525b;font-size:14px;margin:6px 0 16px}
+.app-guida ol{list-style:none;margin:0;padding:0;display:grid;gap:10px;text-align:left}
+.app-guida li{display:flex;align-items:center;gap:12px;background:#f6f6f7;border-radius:16px;padding:12px}
+.app-guida .gn{flex:none;width:24px;height:24px;border-radius:50%;background:#0a0a0b;color:#fff;font:700 12px/24px "Inter",sans-serif;text-align:center}
+.app-guida .gic{flex:none;width:42px;height:42px;border-radius:12px;background:#fff;color:#007aff;display:grid;place-items:center;box-shadow:0 1px 0 rgba(0,0,0,.06)}
+.app-guida .gt{display:block;font-weight:500;font-size:14.5px;color:#111}.app-guida .gt b{font-weight:800}.app-guida small{display:block;color:#71717a;font-size:12.5px;margin-top:2px}
+.app-guida .gc{margin-top:16px;width:100%;background:var(--os-r,#e10600);color:#fff;font-weight:700;border-radius:999px;padding:13px}
+.app-guida .gfr{position:fixed;left:50%;bottom:calc(14px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);display:flex;flex-direction:column;align-items:center;gap:2px;color:#007aff;font:700 12px/1.2 "Inter",sans-serif;pointer-events:none;z-index:2}
+.app-guida .gfr svg{background:#007aff;border-radius:10px;padding:6px;width:34px;height:34px;box-shadow:0 6px 16px -6px rgba(0,122,255,.8)}
+.app-guida .gfr i{font-style:normal;font-size:26px;line-height:1;animation:gd-fr 1s ease-in-out infinite}@keyframes gd-fr{50%{transform:translateY(6px)}}
+@media (min-width:600px){.app-guida .gfr{display:none}}
 </style></head>
 <body><div id="os-splash" aria-hidden="true"><div class="sp-c"><i class="sp-r"></i><i class="sp-r"></i><i class="sp-r"></i><img class="sp-l" src="/icone/logo-app.webp" alt="" width="640" height="372"><div class="sp-eq"><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div></div></div>
 <script>/* animazione del logo all'apertura dell'app (una volta per apertura) */
@@ -736,13 +754,30 @@ ReactDOM.createRoot(document.getElementById('root')).render(html`<${EB}><${App}/
 </script>
 <script>/* app installabile: copia per lavorare anche con poca rete + invito a installarla */
 (function(){if('serviceWorker' in navigator&&(location.protocol==='https:'||location.hostname==='localhost'))window.addEventListener('load',function(){navigator.serviceWorker.register('/sw.js').catch(function(){})});
-var st=window.matchMedia&&matchMedia('(display-mode: standalone)').matches||navigator.standalone,ev=null,ios=/iphone|ipad|ipod/i.test(navigator.userAgent)&&!/crios|fxios/i.test(navigator.userAgent);
+var ua=navigator.userAgent,st=window.matchMedia&&matchMedia('(display-mode: standalone)').matches||navigator.standalone,ev=null,
+ apple=/iphone|ipad|ipod/i.test(ua)||(/macintosh/i.test(ua)&&navigator.maxTouchPoints>1),ipad=/ipad/i.test(ua)||(/macintosh/i.test(ua)&&navigator.maxTouchPoints>1),
+ inapp=apple&&/instagram|fban|fbav|fbios|messenger|tiktok|bytedance|line\/|snapchat|linkedin|twitter|gsa\//i.test(ua),altro=apple&&/crios|fxios|edgios|opios/i.test(ua),ios=apple&&!inapp;
+var IC={sh:'<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12M7.5 7.5 12 3l4.5 4.5"/><path d="M8 11H6a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-6a2 2 0 0 0-2-2h-2"/></svg>',
+ pi:'<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3.5" y="3.5" width="17" height="17" rx="4"/><path d="M12 8v8M8 12h8"/></svg>',
+ ok:'<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12.5 4.5 4.5L19 7.5"/></svg>',
+ pt:'<svg viewBox="0 0 24 24" width="22" height="22" fill="currentColor"><circle cx="5" cy="12" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="19" cy="12" r="2"/></svg>'};
+function guida(){var g=document.createElement('div');g.className='app-guida';g.setAttribute('role','dialog');g.setAttribute('aria-label','Come installare l\'app');
+ var dove=ipad?'in alto a destra, accanto all\'indirizzo':altro?'in alto a destra, nella barra dell\'indirizzo':'nella barra in basso (se non lo vedi, tocca prima '+IC.pt.replace('width="22" height="22"','width="16" height="16" style="display:inline;vertical-align:-3px"')+' in basso a destra)';
+ var passi=inapp?[[IC.pt,'Tocca <b>···</b> in alto a destra','oppure il tasto con la bussola o la freccia'],[IC.sh,'Scegli <b>«Apri in Safari»</b>','oppure «Apri nel browser»'],[IC.ok,'Da Safari segui i 3 passaggi','la barra «App OVERSOUND» ti guida']]
+  :[[IC.sh,'Tocca <b>Condividi</b>',dove],[IC.pi,'Scegli <b>«Aggiungi alla schermata Home»</b>','scorri un po\' in giù se non la vedi subito'],[IC.ok,'Tocca <b>Aggiungi</b>','l\'icona OVERSOUND compare tra le tue app: aprila da lì']];
+ g.innerHTML='<div class="gs"><button class="gx" aria-label="Chiudi">✕</button><img src="/icone/app-192.png?v=4" alt="" class="gi"><h3>'+(inapp?'Apri il sito in Safari':'Installa l\'app su '+(ipad?'iPad':'iPhone'))+'</h3><p class="gp">'+(inapp?'Da Instagram, Facebook o TikTok l\'app non si può aggiungere: serve aprire il sito nel browser.':'Gratis, in 3 tocchi: si apre a schermo intero, veloce, come un\'app vera.')+'</p><ol>'
+  +passi.map(function(x,i){return '<li><span class="gn">'+(i+1)+'</span><span class="gic">'+x[0]+'</span><span><b class="gt">'+x[1]+'</b><small>'+x[2]+'</small></span></li>'}).join('')+'</ol>'
+  +(inapp?'<button class="gc">Copia il link del sito</button>':'<button class="gc">Ho capito</button>')+'</div>'+(!inapp&&!ipad&&!altro?'<div class="gfr" aria-hidden="true">'+IC.sh+'<span>Condividi è qui sotto</span><i>↓</i></div>':'');
+ function via(){g.classList.add('via');setTimeout(function(){g.remove()},300)}
+ g.addEventListener('click',function(e){if(e.target===g||e.target.closest('.gx'))via()});
+ g.querySelector('.gc').onclick=function(){if(inapp){var u='https://oversound.it/';try{navigator.clipboard.writeText(u)}catch(e){}this.textContent='Link copiato: incollalo in Safari'}else via()};
+ document.body.appendChild(g)}
 function no(){return !!window.__osAppNo}
 function chiudi(b,ricorda){b.remove();if(ricorda)window.__osAppNo=1}
 function mostra(forza){var v=document.querySelector('.app-inv');if(v&&ev&&!v.querySelector('.si'))v.remove();if(st||document.querySelector('.app-inv')||(!forza&&no()))return;
  var b=document.createElement('div');b.className='app-inv';b.setAttribute('role','dialog');b.setAttribute('aria-label','Installa l\'app');
- b.innerHTML='<img src="/icone/app-192.png?v=4" alt=""><span><b>App OVERSOUND</b>'+(ev?'Installala: si apre dalla schermata Home, veloce e a schermo intero.':ios?'Tocca <b style="display:inline">Condividi</b> ⬆ e poi «Aggiungi alla schermata Home».':'Dal menu del browser scegli «Installa app» o «Aggiungi alla schermata Home».')+'</span>'+(ev?'<button class="si">Installa</button>':'')+'<button class="no" aria-label="Chiudi">✕</button>';
- b.querySelector('.no').onclick=function(){chiudi(b,true)};var si=b.querySelector('.si');if(si)si.onclick=function(){ev.prompt();ev.userChoice.finally(function(){ev=null;chiudi(b,false)})};document.body.appendChild(b)}
+ b.innerHTML='<img src="/icone/app-192.png?v=4" alt=""><span><b>App OVERSOUND</b>'+(ev?'Installala: si apre dalla schermata Home, veloce e a schermo intero.':inapp?'Per installarla apri il sito in Safari: ti mostro come.':ios?'Gratis su '+(ipad?'iPad':'iPhone')+', in 3 tocchi da Condividi '+IC.sh.replace('width="22" height="22"','width="15" height="15" style="display:inline;vertical-align:-2px"')+'.':'Dal menu del browser scegli «Installa app» o «Aggiungi alla schermata Home».')+'</span>'+(ev?'<button class="si">Installa</button>':apple?'<button class="si gu">Come si fa</button>':'')+'<button class="no" aria-label="Chiudi">✕</button>';
+ b.querySelector('.no').onclick=function(){chiudi(b,true)};var si=b.querySelector('.si');if(si&&si.classList.contains('gu'))si.onclick=function(){guida()};else if(si)si.onclick=function(){ev.prompt();ev.userChoice.finally(function(){ev=null;chiudi(b,false)})};document.body.appendChild(b)}
 window.addEventListener('beforeinstallprompt',function(e){e.preventDefault();ev=e;if(document.querySelector('.app-inv'))mostra(false)});
 window.addEventListener('appinstalled',function(){var b=document.querySelector('.app-inv');if(b)b.remove()});
 if(!st)setTimeout(function(){mostra(false)},2500);   /* a ogni apertura del sito: invito a scaricare l'app */
