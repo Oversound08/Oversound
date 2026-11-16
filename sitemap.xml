@@ -1,6 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
 <url><loc>https://oversound.it/</loc></url>
+<url><loc>https://oversound.it/catalogo/</loc></url>
+<url><loc>https://oversound.it/consigli/</loc></url>
+<url><loc>https://oversound.it/servizio/service/</loc></url>
+<url><loc>https://oversound.it/servizio/pianoforte/</loc></url>
+<url><loc>https://oversound.it/servizio/riparazioni/</loc></url>
+<url><loc>https://oversound.it/info/cookie/</loc></url>
+<url><loc>https://oversound.it/info/privacy/</loc></url>
+<url><loc>https://oversound.it/info/raee/</loc></url>
+<url><loc>https://oversound.it/info/resi/</loc></url>
+<url><loc>https://oversound.it/info/spedizioni/</loc></url>
+<url><loc>https://oversound.it/info/termini/</loc></url>
 <url><loc>https://oversound.it/categoria/accessori/</loc></url>
 <url><loc>https://oversound.it/categoria/audio-professionale-pa/</loc></url>
 <url><loc>https://oversound.it/categoria/batterie-e-percussioni/</loc></url>
