@@ -30,7 +30,7 @@ Se non coincide il sito non riesce a leggere i dati e mostra i dati di esempio.
 
 ## Indirizzi usati dal sito
 Lettura: `/api/lista`, `/api/prodotto/<slug>`, `/api/config`, `/api/vetrina`, `/api/recensioni`, `/api/categorie`, `/api/filtri`.
-Account: `/api/account/registra`, `accedi`, `recupera`, `io`, `aggiorna`, `password`, `esci` (token salvato solo nel browser del cliente).
+Account: `/api/account/registra`, `accedi`, `recupera`, `io`, `aggiorna`, `password`, `esci`, `reso` (token salvato solo nel browser del cliente). La richiesta di reso (`reso`) serve il gestionale aggiornamento 53.
 Pagamenti online: `/api/pagamento/<ordine>`, `/api/pagamento/ritorno`, `/api/pagamento/annulla`.
 Invio: `/api/ordini` (prezzi e totale li ricalcola sempre il gestionale), `/api/recensioni`, `/api/newsletter`, `/api/avvisi`.
 
