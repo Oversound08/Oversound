@@ -1,8 +1,9 @@
 """Crea una pagina vera per ogni prodotto del sito (oversound.it/prodotto/nome-prodotto/) e la mappa del sito.
 
-Google legge bene solo gli indirizzi «veri», non quelli con # (es. oversound.it/#/prodotto/...).
+Google legge bene solo gli indirizzi «veri» (oversound.it/prodotto/..., oversound.it/carrello/), non quelli con #.
 Questo programma prende i prodotti dal gestionale e per ognuno scrive una copia del sito con titolo,
 descrizione, foto, prezzo e dati strutturati già dentro: Google la trova, il cliente vede il sito normale.
+Crea anche le pagine fisse (catalogo, carrello, servizi, informative...) e 404.html, che fa aprire qualsiasi altro indirizzo del sito.
 Lo fa da solo GitHub ogni 6 ore (.github/workflows/pagine-seo.yml). A mano:  python3 strumenti/genera_pagine.py
 """
 import html, json, os, re, shutil, sys, time, unicodedata, urllib.parse, urllib.request
@@ -100,17 +101,16 @@ def pagina(tpl, p, d, az):
     t = re.sub(r'<meta property="og:url" content="[^"]*">', f'<meta property="og:url" content="{E(url)}">', t, count=1)
     t = t.replace('<meta property="og:type" content="website">', '<meta property="og:type" content="product">', 1)
     t = t.replace('<meta property="og:image" content="https://oversound.it/icone/app-512.png">', f'<meta property="og:image" content="{E(foto[0])}">' if foto else '<meta property="og:image" content="https://oversound.it/icone/app-512.png">', 1)
-    testa = ('<base href="/">'
-             + f'<script>window.OS_ROUTE={js("/prodotto/" + sku)}</script>'
+    testa = (f'<script>window.OS_ROUTE={js("/prodotto/" + sku)}</script>'
              + f'<script type="application/ld+json" id="ld-prodotto">{js(prod)}</script><script type="application/ld+json">{js(briciole)}</script>')
-    t = t.replace('<meta charset="utf-8">', '<meta charset="utf-8">' + testa, 1)
+    t = t.replace('<meta charset="utf-8"><base href="/">', '<meta charset="utf-8"><base href="/">' + testa, 1)
     # contenuto visibile subito (anche a chi non esegue JavaScript); il sito lo sostituisce appena è pronto
     corpo = (f'<div id="root"><main style="max-width:760px;margin:0 auto;padding:24px 16px;font-family:system-ui,sans-serif;color:#111">'
              f'<a href="/"><img src="/icone/logo.webp" alt="OVERSOUND" width="900" height="196" style="width:220px;height:auto"></a>'
              + (f'<img src="{E(foto[0])}" alt="{E(nome)}" style="display:block;width:100%;max-width:480px;aspect-ratio:1;object-fit:contain;margin:20px 0;background:#f6f6f7;border-radius:16px">' if foto else "")
              + f'<p style="color:#666;margin:16px 0 4px">{E(marca)}</p><h1 style="font-size:28px;margin:0 0 8px">{E(nome)}</h1>'
              f'<p style="font-size:24px;font-weight:800;margin:0 0 12px">{euro(prezzo)}</p><p>{E(breve)}</p>'
-             f'<p><a href="/#/prodotto/{E(urllib.parse.quote(sku))}" style="display:inline-block;background:#e10600;color:#fff;padding:12px 22px;border-radius:99px;text-decoration:none;font-weight:700">Vedi il prodotto</a></p></main></div>')
+             f'<p><a href="/prodotto/{E(slug)}/" style="display:inline-block;background:#e10600;color:#fff;padding:12px 22px;border-radius:99px;text-decoration:none;font-weight:700">Vedi il prodotto</a></p></main></div>')
     t2 = re.sub(r'<div id="root">.*?</div></div>', lambda _: corpo, t, count=1, flags=re.S)
     if t2 == t: raise SystemExit("Non trovo il contenitore del sito in index.html")
     return t2
@@ -129,13 +129,44 @@ def pagina_categoria(tpl, cat, prodotti, az):
     for pat, val in ((r'<meta name="description" content="[^"]*">', f'<meta name="description" content="{E(desc)}">'), (r'<link rel="canonical" href="[^"]*">', f'<link rel="canonical" href="{E(url)}">'),
                      (r'<meta property="og:title" content="[^"]*">', f'<meta property="og:title" content="{E(tit)}">'), (r'<meta property="og:description" content="[^"]*">', f'<meta property="og:description" content="{E(desc)}">'),
                      (r'<meta property="og:url" content="[^"]*">', f'<meta property="og:url" content="{E(url)}">')): t = re.sub(pat, lambda _, v=val: v, t, count=1)
-    t = t.replace('<meta charset="utf-8">', '<meta charset="utf-8"><base href="/">' + f'<script>window.OS_ROUTE={js("/catalogo?cat=" + urllib.parse.quote(cat))}</script>'
+    t = t.replace('<meta charset="utf-8"><base href="/">', '<meta charset="utf-8"><base href="/">' + f'<script>window.OS_ROUTE={js("/catalogo?cat=" + urllib.parse.quote(cat))}</script>'
                   + f'<script type="application/ld+json">{js(lista)}</script><script type="application/ld+json">{js(bric)}</script>', 1)
     righe = "".join(f'<li style="margin:6px 0"><a href="/prodotto/{E(p["slug"])}/" style="color:#111">{E(p["nome"])}</a> <b>{euro(float(p.get("prezzo") or 0))}</b></li>' for p in prodotti[:200])
     corpo = (f'<div id="root"><main style="max-width:760px;margin:0 auto;padding:24px 16px;font-family:system-ui,sans-serif;color:#111"><a href="/"><img src="/icone/logo.webp" alt="OVERSOUND" width="900" height="196" style="width:220px;height:auto"></a>'
              f'<h1 style="font-size:28px">{E(cat)}</h1><p>{E(desc)}</p><ul style="padding-left:18px">{righe}</ul></main></div>')
     t2 = re.sub(r'<div id="root">.*?</div></div>', lambda _: corpo, t, count=1, flags=re.S)
     return t2
+
+
+def pagina_fissa(tpl, percorso, tit, desc, indicizza=True):
+    """Pagina come oversound.it/carrello/: il sito normale, con titolo e descrizione giusti già dentro."""
+    url = f"{SITO}/{percorso}/"; tit = f"{tit} | OVERSOUND"; t = tpl
+    t = re.sub(r"<title>.*?</title>", f"<title>{E(tit)}</title>", t, count=1, flags=re.S)
+    cambi = [(r'<link rel="canonical" href="[^"]*">', f'<link rel="canonical" href="{E(url)}">'), (r'<meta property="og:title" content="[^"]*">', f'<meta property="og:title" content="{E(tit)}">'),
+             (r'<meta property="og:url" content="[^"]*">', f'<meta property="og:url" content="{E(url)}">')]
+    if desc: cambi += [(r'<meta name="description" content="[^"]*">', f'<meta name="description" content="{E(desc)}">'), (r'<meta property="og:description" content="[^"]*">', f'<meta property="og:description" content="{E(desc)}">')]
+    if not indicizza: cambi.append((r'<meta name="robots" content="[^"]*">', '<meta name="robots" content="noindex,follow">'))
+    for pat, val in cambi: t = re.sub(pat, lambda _, v=val: v, t, count=1)
+    return t
+
+
+def pagine_fisse(tpl):
+    """(percorso, titolo, descrizione, da indicizzare) per le pagine del sito che non sono prodotti o categorie."""
+    P = [("catalogo", "Catalogo", "Tutti i prodotti OVERSOUND: strumenti musicali, audio, luci e usato garantito. Spedizione in Italia o ritiro in negozio.", True),
+         ("consigli", "Aiutami a scegliere", "Rispondi a tre domande e ti consigliamo lo strumento giusto per te.", True),
+         ("carrello", "Carrello", "", False), ("cassa", "Completa l’ordine", "", False), ("preferiti", "Preferiti", "", False), ("account", "Il tuo account", "", False)]
+    m = re.search(r"const SERV=\[(.*?)\];", tpl, re.S)
+    for sid, t, d in re.findall(r"\{id:'([a-z0-9-]+)',t:'([^']+)',s:'([^']*)'", m.group(1) if m else ""): P.append((f"servizio/{sid}", t, d, True))
+    info = {}
+    m = re.search(r"const INFO=\{(.*?)\};", tpl, re.S)
+    for k, t in re.findall(r"(?:^|[,{\s])([a-z][a-z0-9-]*):\['([^']+)'", m.group(1) if m else ""): info[k] = t
+    try:
+        pg = leggi("/api/pagine", prove=2)
+        for x in (pg.get("pagine") if isinstance(pg, dict) else pg) or []:
+            if isinstance(x, dict) and re.fullmatch(r"[a-z0-9][a-z0-9-]{0,79}", str(x.get("slug") or "")): info[x["slug"]] = x.get("titolo") or x["slug"]
+    except Exception: pass
+    for k, t in sorted(info.items()): P.append((f"info/{k}", t, "", True))
+    return P
 
 
 def scrivi(f, testo):
@@ -174,7 +205,18 @@ def main():
         if os.path.isdir(cart):
             for x in os.listdir(cart):
                 if x not in tenere and os.path.isdir(os.path.join(cart, x)): shutil.rmtree(os.path.join(cart, x))
-    url = [SITO + "/"] + [f"{SITO}/categoria/{s}/" for s in sorted(cats)] + [f"{SITO}/prodotto/{s}/" for s in sorted(fatti)]
+    # pagine fisse (catalogo, carrello, servizi, informative) e 404.html: con GitHub Pages fa aprire il sito a qualsiasi indirizzo
+    fisse = pagine_fisse(tpl)
+    for perc, t, d, ind in fisse: scrivi(os.path.join(QUI, *perc.split("/"), "index.html"), pagina_fissa(tpl, perc, t, d, ind))
+    for base in ("servizio", "info"):   # servizi e informative tolti dal sito: via anche la pagina
+        tenere = {p.split("/", 1)[1] for p, *_ in fisse if p.startswith(base + "/")}; cart = os.path.join(QUI, base)
+        if os.path.isdir(cart):
+            for x in os.listdir(cart):
+                if x not in tenere and os.path.isdir(os.path.join(cart, x)): shutil.rmtree(os.path.join(cart, x))
+    t404 = re.sub(r'<meta name="robots" content="[^"]*">', '<meta name="robots" content="noindex,follow">', tpl, count=1)
+    scrivi(os.path.join(QUI, "404.html"), t404)
+    url = ([SITO + "/"] + [f"{SITO}/{p}/" for p, _, _, ind in fisse if ind] + [f"{SITO}/categoria/{s}/" for s in sorted(cats)]
+           + [f"{SITO}/prodotto/{s}/" for s in sorted(fatti)])
     scrivi(os.path.join(QUI, "sitemap.xml"), '<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n'
            + "".join(f"<url><loc>{html.escape(u)}</loc></url>\n" for u in url) + "</urlset>\n")
     print(f"Pagine: {len(fatti)} prodotti, {len(cats)} categorie. Mappa del sito: {len(url)} indirizzi.")
