@@ -1,5 +1,5 @@
 # Pagine dei prodotti per Google: ogni 6 ore (e quando cambia il sito) legge i prodotti dal gestionale,
-# crea oversound.it/prodotto/nome-prodotto/ e aggiorna sitemap.xml. Si può avviare anche a mano da «Actions».
+# crea oversound.it/prodotto/nome-prodotto/, le pagine fisse (carrello, catalogo...), 404.html e aggiorna sitemap.xml. Si può avviare anche a mano da «Actions».
 name: Pagine prodotti per Google
 on:
   schedule:
@@ -28,7 +28,7 @@ jobs:
         run: |
           git config user.name "OVERSOUND automatico"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add -A prodotto categoria grazie sitemap.xml index.html
+          git add -A .
           if git diff --cached --quiet; then echo "Niente da aggiornare"; exit 0; fi
           git commit -m "Pagine dei prodotti aggiornate dal gestionale"
           git pull --rebase origin main
