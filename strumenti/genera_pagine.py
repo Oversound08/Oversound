@@ -138,6 +138,16 @@ def pagina_categoria(tpl, cat, prodotti, az):
     return t2
 
 
+def pagina_grazie(tpl):
+    """oversound.it/grazie/: pagina «Grazie per l'acquisto» dopo ogni ordine. Indirizzo fisso per le conversioni di Google Ads e Meta; Google non la indicizza."""
+    url = f"{SITO}/grazie/"; tit = "Grazie per l'acquisto | OVERSOUND"
+    t = re.sub(r"<title>.*?</title>", f"<title>{E(tit)}</title>", tpl, count=1, flags=re.S)
+    t = re.sub(r'<meta name="robots" content="[^"]*">', '<meta name="robots" content="noindex,follow">', t, count=1)
+    for pat, val in ((r'<link rel="canonical" href="[^"]*">', f'<link rel="canonical" href="{E(url)}">'), (r'<meta property="og:url" content="[^"]*">', f'<meta property="og:url" content="{E(url)}">'),
+                     (r'<meta property="og:title" content="[^"]*">', f'<meta property="og:title" content="{E(tit)}">')): t = re.sub(pat, lambda _, v=val: v, t, count=1)
+    return t.replace('<meta charset="utf-8">', '<meta charset="utf-8"><base href="/">' + f'<script>window.OS_ROUTE={js("/grazie")}</script>', 1)
+
+
 def scrivi(f, testo):
     os.makedirs(os.path.dirname(f), exist_ok=True)
     if not os.path.exists(f) or open(f, encoding="utf-8").read() != testo: open(f, "w", encoding="utf-8").write(testo); return True
@@ -145,6 +155,8 @@ def scrivi(f, testo):
 
 
 def main():
+    fi = os.path.join(QUI, "index.html")
+    scrivi(os.path.join(QUI, "grazie", "index.html"), pagina_grazie(open(fi, encoding="utf-8").read()))   # anche se il gestionale non risponde
     try:
         lista = leggi("/api/lista"); az = (leggi("/api/vetrina") or {}).get("azienda", {})
     except Exception as ex:
@@ -152,10 +164,10 @@ def main():
     if not isinstance(lista, list) or not lista:
         print("Nessun prodotto dal gestionale: non cambio niente."); return 0
     # scheda del negozio (indirizzo, orari, contatti) anche nella pagina principale
-    fi = os.path.join(QUI, "index.html"); tpl = open(fi, encoding="utf-8").read()
+    tpl = open(fi, encoding="utf-8").read()
     blocco = f'<!--NEGOZIO--><script type="application/ld+json" id="ld-negozio-fisso">{js(negozio(az))}</script><!--/NEGOZIO-->'
     tpl = re.sub(r"<!--NEGOZIO-->.*?<!--/NEGOZIO-->", lambda _: blocco, tpl, count=1, flags=re.S)
-    scrivi(fi, tpl)
+    scrivi(fi, tpl); scrivi(os.path.join(QUI, "grazie", "index.html"), pagina_grazie(tpl))
     fatti = set(); percat = {}
     for p in lista:
         slug = str(p.get("slug") or "")
