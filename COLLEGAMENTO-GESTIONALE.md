@@ -30,7 +30,7 @@ Se non coincide il sito non riesce a leggere i dati e mostra i dati di esempio.
 
 ## Indirizzi usati dal sito
 Lettura: `/api/lista`, `/api/prodotto/<slug>`, `/api/config`, `/api/vetrina`, `/api/recensioni`, `/api/categorie`, `/api/filtri`.
-Account: `/api/account/registra`, `accedi`, `recupera`, `io`, `aggiorna`, `password`, `esci` (token salvato solo nel browser del cliente).
+Account: `/api/account/registra`, `accedi`, `recupera`, `io`, `aggiorna`, `password`, `esci`, `reso` (token salvato solo nel browser del cliente). La richiesta di reso (`reso`) serve il gestionale aggiornamento 53.
 Pagamenti online: `/api/pagamento/<ordine>`, `/api/pagamento/ritorno`, `/api/pagamento/annulla`.
 Invio: `/api/ordini` (prezzi e totale li ricalcola sempre il gestionale), `/api/recensioni`, `/api/newsletter`, `/api/avvisi`.
 
@@ -41,3 +41,10 @@ Invio: `/api/ordini` (prezzi e totale li ricalcola sempre il gestionale), `/api/
 - Le sottocategorie sono riquadri di navigazione in cima al catalogo; i filtri sono a parte. Se in Sito web > Filtri del sito ci sono filtri, il sito mostra quelli (per la categoria aperta, nell'ordine scelto); altrimenti li calcola da solo (prezzo, condizione, disponibilità, tempi, marca e caratteristiche tecniche).
 - I metodi di pagamento mostrati nella cassa sono quelli accesi in Sito web > Pagamenti. Con carta o PayPal il cliente va sulla pagina di pagamento e torna al sito; l'ordine passa da solo a «Da spedire».
 - Nel sito non ci sono password o chiavi: il repository è pubblico.
+
+## Pagina «Grazie per l'acquisto» (per le conversioni degli ads)
+Dopo ogni ordine confermato il cliente arriva su **https://oversound.it/grazie/** con il riepilogo dell'ordine:
+subito per bonifico, contrassegno e gli altri metodi; con carta o PayPal solo quando il pagamento risulta riuscito
+(se il pagamento è annullato o non ancora arrivato resta sulla pagina dell'ordine). In Google Ads e Meta usa
+come conversione «l'URL contiene /grazie». La pagina non compare su Google (noindex) e la ricrea da sola
+`strumenti/genera_pagine.py` da `index.html`. Non serve cambiare il gestionale.
