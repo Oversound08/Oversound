@@ -762,10 +762,20 @@ function AvvisoCookie(){const [v,setV]=useState(()=>!leggiConsenso());const [per
 function App(){
  const [h,setH]=useState(ROTTA0);useEffect(()=>{const f=e=>{setH(e.detail);scrollTo(0,0)},g=e=>{setH(e.state&&e.state.h||fromUrl());scrollTo(0,0)},k=()=>{if(/^#\//.test(location.hash))vai(location.hash.slice(1),true)};
   addEventListener('os-rotta',f);addEventListener('popstate',g);addEventListener('hashchange',k);return()=>{removeEventListener('os-rotta',f);removeEventListener('popstate',g);removeEventListener('hashchange',k)}},[]);
- /* statistiche delle visite (senza cookie e senza dati personali): pagina vista e da dove arriva il visitatore */
- useEffect(()=>{if(!GESTIONALE.baseUrl||DEMO_MODE||navigator.webdriver)return;const t=setTimeout(()=>{try{const [pp,qq]=h.split('?'),q=new URLSearchParams(location.search),prima=!window.__osv;window.__osv=1;
-  const d={pagina:pp||'/',ref:prima?document.referrer:'',utm:prima?(q.get('utm_source')||q.get('fbclid')&&'facebook'||q.get('gclid')&&'google'||''):'',larg:innerWidth,app:matchMedia('(display-mode: standalone)').matches?1:0};
-  navigator.sendBeacon(GESTIONALE.baseUrl+'/api/visita',new Blob([JSON.stringify(d)],{type:'text/plain'}))}catch(e){}},600);return()=>clearTimeout(t)},[h]);
+ /* statistiche delle visite (senza cookie e senza dati personali): pagina vista e da dove arriva il visitatore.
+    aggiornamento 55: solo persone vere. Si invia solo con la pagina visibile (niente anteprime), si dice se c'è stato un gesto
+    (tocco, clic, tasto, mouse: i robot di solito non ne fanno) e il titolare segna i suoi dispositivi con ?noconta=1 (?conta=1 per tornare) */
+ useEffect(()=>{if(!GESTIONALE.baseUrl||DEMO_MODE||navigator.webdriver)return;const W=window,B=d=>navigator.sendBeacon(GESTIONALE.baseUrl+'/api/visita',new Blob([JSON.stringify(d)],{type:'text/plain'}));
+  let io=0;try{const q=new URLSearchParams(location.search);if(q.has('noconta'))localStorage.setItem('os-noconta','1');if(q.has('conta'))localStorage.removeItem('os-noconta');io=localStorage.getItem('os-noconta')?1:0}catch(e){}
+  if(!W.__osgL){W.__osgL=1;const g=()=>{if(W.__osgG)return;W.__osgG=1;if(W.__osgS&&!io)try{B({gesto:1})}catch(e){}};['pointerdown','touchstart','keydown','wheel','mousemove'].forEach(e=>addEventListener(e,g,{passive:true}))}
+  W.__osgG=0;W.__osgS=0;let t;
+  const invia=()=>{t=setTimeout(()=>{try{const [pp,qq]=h.split('?'),q=new URLSearchParams(location.search),prima=!W.__osv;W.__osv=1;
+   const d={pagina:pp||'/',ref:prima?document.referrer:'',utm:prima?(q.get('utm_source')||q.get('fbclid')&&'facebook'||q.get('gclid')&&'google'||''):'',larg:innerWidth,app:matchMedia('(display-mode: standalone)').matches?1:0,
+    g:W.__osgG?1:0,f:navigator.languages&&!navigator.languages.length?'l':''};if(io)d.io=1;
+   W.__osgS=1;B(d)}catch(e){}},600)};
+  const vis=()=>{if(document.visibilityState==='visible'){document.removeEventListener('visibilitychange',vis);invia()}};
+  if(document.visibilityState==='visible')invia();else document.addEventListener('visibilitychange',vis);
+  return()=>{clearTimeout(t);document.removeEventListener('visibilitychange',vis)}},[h]);
  const [path,qs]=h.split('?');const [page,arg0]=path.split('/').filter(Boolean),arg=arg0?decodeURIComponent(arg0):arg0;const params=new URLSearchParams(qs);
  const [prod,setProd]=useState(null),[sync,setSync]=useState(null),[err,setErr]=useState(false);
  const load=async()=>{setProd(null);let p,r,er=false;
