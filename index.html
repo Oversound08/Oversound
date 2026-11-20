@@ -768,11 +768,13 @@ function App(){
     (tocco, clic, tasto, mouse: i robot di solito non ne fanno) e il titolare segna i suoi dispositivi con ?noconta=1 (?conta=1 per tornare) */
  useEffect(()=>{if(!GESTIONALE.baseUrl||DEMO_MODE||navigator.webdriver)return;const W=window,B=d=>navigator.sendBeacon(GESTIONALE.baseUrl+'/api/visita',new Blob([JSON.stringify(d)],{type:'text/plain'}));
   let io=0;try{const q=new URLSearchParams(location.search);if(q.has('noconta'))localStorage.setItem('os-noconta','1');if(q.has('conta'))localStorage.removeItem('os-noconta');io=localStorage.getItem('os-noconta')?1:0}catch(e){}
+  W.__osDv=()=>{try{const c=W.osConsenso;if(!(c&&c.statistiche)){localStorage.removeItem('os-dv');return''}let v=localStorage.getItem('os-dv')||'';if(!/^[a-z0-9]{8,40}$/.test(v)){v=(crypto.randomUUID?crypto.randomUUID():Math.random().toString(36).slice(2)+Date.now().toString(36)).replace(/-/g,'').slice(0,24);localStorage.setItem('os-dv',v)}return v}catch(e){return''}};
+  if(!W.__osgI){W.__osgI=1;const ins=()=>{try{if(io||localStorage.getItem('os-app'))return;localStorage.setItem('os-app','1');const x={inst:1,larg:innerWidth},v=W.__osDv();if(v)x.dv=v;B(x)}catch(e){}};addEventListener('appinstalled',ins);if(matchMedia('(display-mode: standalone)').matches||navigator.standalone)ins()}
   if(!W.__osgL){W.__osgL=1;const g=()=>{if(W.__osgG)return;W.__osgG=1;if(W.__osgS&&!io)try{B({gesto:1})}catch(e){}};['pointerdown','touchstart','keydown','wheel','mousemove'].forEach(e=>addEventListener(e,g,{passive:true}))}
   W.__osgG=0;W.__osgS=0;let t;
   const invia=()=>{t=setTimeout(()=>{try{const [pp,qq]=h.split('?'),q=new URLSearchParams(location.search),prima=!W.__osv;W.__osv=1;
    const d={pagina:pp||'/',ref:prima?document.referrer:'',utm:prima?(q.get('utm_source')||q.get('fbclid')&&'facebook'||q.get('gclid')&&'google'||''):'',larg:innerWidth,app:matchMedia('(display-mode: standalone)').matches?1:0,
-    g:W.__osgG?1:0,f:navigator.languages&&!navigator.languages.length?'l':''};if(io)d.io=1;
+    g:W.__osgG?1:0,f:navigator.languages&&!navigator.languages.length?'l':''};if(io)d.io=1;const dv=W.__osDv();if(dv)d.dv=dv;
    W.__osgS=1;B(d)}catch(e){}},600)};
   const vis=()=>{if(document.visibilityState==='visible'){document.removeEventListener('visibilitychange',vis);invia()}};
   if(document.visibilityState==='visible')invia();else document.addEventListener('visibilitychange',vis);
