@@ -154,7 +154,7 @@ def pagine_fisse(tpl):
     """(percorso, titolo, descrizione, da indicizzare) per le pagine del sito che non sono prodotti o categorie."""
     P = [("catalogo", "Catalogo", "Tutti i prodotti OVERSOUND: strumenti musicali, audio, luci e usato garantito. Spedizione in Italia o ritiro in negozio.", True),
          ("consigli", "Aiutami a scegliere", "Rispondi a tre domande e ti consigliamo lo strumento giusto per te.", True),
-         ("carrello", "Carrello", "", False), ("cassa", "Completa l’ordine", "", False), ("preferiti", "Preferiti", "", False), ("account", "Il tuo account", "", False)]
+         ("carrello", "Carrello", "", False), ("cassa", "Completa l’ordine", "", False), ("preferiti", "Preferiti", "", False), ("confronta", "Confronta prodotti", "", False), ("account", "Il tuo account", "", False)]
     m = re.search(r"const SERV=\[(.*?)\];", tpl, re.S)
     for sid, t, d in re.findall(r"\{id:'([a-z0-9-]+)',t:'([^']+)',s:'([^']*)'", m.group(1) if m else ""): P.append((f"servizio/{sid}", t, d, True))
     info = {}
