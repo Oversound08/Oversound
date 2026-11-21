@@ -1088,15 +1088,17 @@ function guida(){var g=document.createElement('div');g.className='app-guida';g.s
  g.addEventListener('click',function(e){if(e.target===g||e.target.closest('.gx'))via()});
  g.querySelector('.gc').onclick=function(){if(inapp){var u='https://oversound.it/';try{navigator.clipboard.writeText(u)}catch(e){}this.textContent='Link copiato: incollalo in Safari'}else via()};
  document.body.appendChild(g)}
-function no(){return !!window.__osAppNo}
-function chiudi(b,ricorda){b.remove();if(ricorda)window.__osAppNo=1}
+function no(){if(window.__osAppNo)return true;try{var t=+localStorage.getItem('os-app-no')||0;return Date.now()-t<30*864e5}catch(e){return false}}
+function chiudi(b,ricorda){b.remove();if(ricorda){window.__osAppNo=1;try{localStorage.setItem('os-app-no',String(Date.now()))}catch(e){}}}
+/* l'invito all'app non copre mai l'avviso cookie: aspetta che il visitatore abbia scelto */
+function sceltaCookie(){try{return !!localStorage.getItem('os-consenso')}catch(e){return true}}
 function mostra(forza){var v=document.querySelector('.app-inv');if(v&&ev&&!v.querySelector('.si'))v.remove();if(st||document.querySelector('.app-inv')||(!forza&&no()))return;
  var b=document.createElement('div');b.className='app-inv';b.setAttribute('role','dialog');b.setAttribute('aria-label','Installa l\'app');
  b.innerHTML='<img src="/icone/app-192.png?v=4" alt=""><span><b>App OVERSOUND</b>'+(ev?'Installala: si apre dalla schermata Home, veloce e a schermo intero.':inapp?'Per installarla apri il sito in Safari: ti mostro come.':ios?'Gratis su '+(ipad?'iPad':'iPhone')+', in 3 tocchi da Condividi '+IC.sh.replace('width="22" height="22"','width="15" height="15" style="display:inline;vertical-align:-2px"')+'.':'Dal menu del browser scegli «Installa app» o «Aggiungi alla schermata Home».')+'</span>'+(ev?'<button class="si">Installa</button>':apple?'<button class="si gu">Come si fa</button>':'')+'<button class="no" aria-label="Chiudi">✕</button>';
  b.querySelector('.no').onclick=function(){chiudi(b,true)};var si=b.querySelector('.si');if(si&&si.classList.contains('gu'))si.onclick=function(){guida()};else if(si)si.onclick=function(){ev.prompt();ev.userChoice.finally(function(){ev=null;chiudi(b,false)})};document.body.appendChild(b)}
 window.addEventListener('beforeinstallprompt',function(e){e.preventDefault();ev=e;if(document.querySelector('.app-inv'))mostra(false)});
 window.addEventListener('appinstalled',function(){var b=document.querySelector('.app-inv');if(b)b.remove()});
-if(!st)setTimeout(function(){mostra(false)},2500);   /* a ogni apertura del sito: invito a scaricare l'app */
+if(!st){if(sceltaCookie())setTimeout(function(){mostra(false)},2500);else window.addEventListener('os-consenso',function(){setTimeout(function(){mostra(false)},20000)},{once:true})}   /* invito all'app: dopo la scelta sui cookie, poi non più per 30 giorni se lo chiude */
 window.osInstallaApp=function(){mostra(true)};
 document.addEventListener('click',function(e){var a=e.target.closest&&e.target.closest('a[href="/app"]');if(a){e.preventDefault();mostra(true)}})})();</script>
 </body></html>
