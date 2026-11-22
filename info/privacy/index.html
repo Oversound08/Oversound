@@ -296,7 +296,7 @@ html.splash-on,html.splash-on body{overflow:hidden}
  if(!app||sessionStorage.getItem('os-splash')){d.remove();return}sessionStorage.setItem('os-splash','1')}catch(e){d.remove();return}
  document.documentElement.classList.add('splash-on');var via=function(){if(!d.parentNode)return;d.classList.add('via');document.documentElement.classList.remove('splash-on');setTimeout(function(){d.remove()},650)};
  d.addEventListener('click',via);setTimeout(via,window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches?700:2300)})();</script>
-<div id="root"><div style="min-height:100vh;display:grid;place-items:center;background:#fff"><img src="/icone/logo.webp" alt="OVERSOUND" width="900" height="196" style="width:min(300px,75vw);height:auto;animation:os-car 1.2s ease-in-out infinite alternate"></div></div>
+<div id="root"><div style="min-height:100vh;display:grid;place-items:center;background:#fff"><img src="/icone/logo.webp" alt="OVERSOUND" width="1000" height="203" style="width:min(300px,75vw);height:auto;animation:os-car 1.2s ease-in-out infinite alternate"></div></div>
 <script>
 const {useState,useEffect,useMemo}=React; const html=htm.bind(React.createElement);
 
@@ -701,7 +701,7 @@ function Ordine({num,t,setCart}){
 const SubChip=(on,fn,t)=>html`<button key=${t} onClick=${fn} class=${'shrink-0 rounded-full border px-3 py-1.5 text-sm font-semibold '+(on?'border-brand bg-brand text-white':'border-zinc-300 text-zinc-700 hover:border-brand')}>${t}</button>`;
 const LOGO='/icone/logo.webp';   /* il logo è dentro il sito: compare subito, senza aspettare il gestionale */
 function Logo({foot}){const [ko,setKo]=useState(0),src=ko===0?LOGO:(ko===1&&AZIENDA.logo?AZIENDA.logo:null);
- if(src)return html`<img src=${src} alt="OVERSOUND Damiano Perri – Strumenti musicali" width="900" height="196" onError=${()=>setKo(k=>k+1)} class=${foot?'os-logo-f rounded-lg bg-white':'os-logo'}/>`;
+ if(src)return html`<img src=${src} alt="OVERSOUND Damiano Perri – Strumenti musicali" width="1000" height="203" onError=${()=>setKo(k=>k+1)} class=${foot?'os-logo-f rounded-lg bg-white':'os-logo'}/>`;
  return html`<span class=${'text-2xl font-black tracking-tight'+(foot?' text-white':'')}>OVER<span class="text-brand">SOUND</span></span>`}
 /* ===== Categorie con simbolo e immagine (dal gestionale) ===== */
 let CATINFO={},FILTRI=[];
