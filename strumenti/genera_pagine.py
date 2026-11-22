@@ -106,7 +106,7 @@ def pagina(tpl, p, d, az):
     t = t.replace('<meta charset="utf-8"><base href="/">', '<meta charset="utf-8"><base href="/">' + testa, 1)
     # contenuto visibile subito (anche a chi non esegue JavaScript); il sito lo sostituisce appena è pronto
     corpo = (f'<div id="root"><main style="max-width:760px;margin:0 auto;padding:24px 16px;font-family:system-ui,sans-serif;color:#111">'
-             f'<a href="/"><img src="/icone/logo.webp" alt="OVERSOUND" width="900" height="196" style="width:220px;height:auto"></a>'
+             f'<a href="/"><img src="/icone/logo.webp" alt="OVERSOUND" width="1000" height="203" style="width:220px;height:auto"></a>'
              + (f'<img src="{E(foto[0])}" alt="{E(nome)}" style="display:block;width:100%;max-width:480px;aspect-ratio:1;object-fit:contain;margin:20px 0;background:#f6f6f7;border-radius:16px">' if foto else "")
              + f'<p style="color:#666;margin:16px 0 4px">{E(marca)}</p><h1 style="font-size:28px;margin:0 0 8px">{E(nome)}</h1>'
              f'<p style="font-size:24px;font-weight:800;margin:0 0 12px">{euro(prezzo)}</p><p>{E(breve)}</p>'
@@ -132,7 +132,7 @@ def pagina_categoria(tpl, cat, prodotti, az):
     t = t.replace('<meta charset="utf-8"><base href="/">', '<meta charset="utf-8"><base href="/">' + f'<script>window.OS_ROUTE={js("/catalogo?cat=" + urllib.parse.quote(cat))}</script>'
                   + f'<script type="application/ld+json">{js(lista)}</script><script type="application/ld+json">{js(bric)}</script>', 1)
     righe = "".join(f'<li style="margin:6px 0"><a href="/prodotto/{E(p["slug"])}/" style="color:#111">{E(p["nome"])}</a> <b>{euro(float(p.get("prezzo") or 0))}</b></li>' for p in prodotti[:200])
-    corpo = (f'<div id="root"><main style="max-width:760px;margin:0 auto;padding:24px 16px;font-family:system-ui,sans-serif;color:#111"><a href="/"><img src="/icone/logo.webp" alt="OVERSOUND" width="900" height="196" style="width:220px;height:auto"></a>'
+    corpo = (f'<div id="root"><main style="max-width:760px;margin:0 auto;padding:24px 16px;font-family:system-ui,sans-serif;color:#111"><a href="/"><img src="/icone/logo.webp" alt="OVERSOUND" width="1000" height="203" style="width:220px;height:auto"></a>'
              f'<h1 style="font-size:28px">{E(cat)}</h1><p>{E(desc)}</p><ul style="padding-left:18px">{righe}</ul></main></div>')
     t2 = re.sub(r'<div id="root">.*?</div></div>', lambda _: corpo, t, count=1, flags=re.S)
     return t2
