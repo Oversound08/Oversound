@@ -897,7 +897,7 @@ function App(){
   if(!W.__osgL){W.__osgL=1;const g=()=>{if(W.__osgG)return;W.__osgG=1;if(W.__osgS&&!io)try{B({gesto:1})}catch(e){}};['pointerdown','touchstart','keydown','wheel','mousemove'].forEach(e=>addEventListener(e,g,{passive:true}))}
   W.__osgG=0;W.__osgS=0;let t;
   const invia=()=>{t=setTimeout(()=>{try{const [pp,qq]=h.split('?'),q=new URLSearchParams(location.search),prima=!W.__osv;W.__osv=1;
-   const d={pagina:pp||'/',ref:prima?document.referrer:'',utm:prima?(q.get('utm_source')||q.get('fbclid')&&'facebook'||q.get('gclid')&&'google'||''):'',larg:innerWidth,app:matchMedia('(display-mode: standalone)').matches?1:0,
+   const d={pagina:pp||'/',ref:prima?document.referrer:'',utm:prima?((q.get('gclid')||q.get('gbraid')||q.get('wbraid')||/google/i.test(q.get('utm_source')||'')&&/cpc|ppc|paid|ads/i.test(q.get('utm_medium')||''))&&'google ads'||q.get('utm_source')||q.get('fbclid')&&'facebook'||''):'',larg:innerWidth,app:matchMedia('(display-mode: standalone)').matches?1:0,
     g:W.__osgG?1:0,f:navigator.languages&&!navigator.languages.length?'l':''};if(io)d.io=1;const dv=W.__osDv();if(dv)d.dv=dv;
    W.__osgS=1;B(d)}catch(e){}},600)};
   const vis=()=>{if(document.visibilityState==='visible'){document.removeEventListener('visibilitychange',vis);invia()}};
