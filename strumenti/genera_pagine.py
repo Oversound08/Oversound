@@ -79,8 +79,11 @@ def pagina(tpl, p, d, az):
     tit = d.get("seo_titolo") or f"{nome} | OVERSOUND"
     desc = breve[:160] or f"{(marca + ' ') if marca and marca.lower() not in nome.lower() else ''}{nome}: disponibile su OVERSOUND, strumenti musicali, audio e luci."
     prezzo = float(p.get("prezzo") or 0); disp = p.get("disponibile")
+    opz = [float(v.get("prezzo") or 0) for v in ((p.get("opzioni") or {}).get("valori") or []) if isinstance(v, dict)]; opz = [x for x in opz if x > 0]
+    if opz and prezzo <= 0: prezzo = min(opz)   # prodotto con varianti: mai 0 €, vale il prezzo più basso
+    da = bool(opz) and min(opz) != max(opz)
     prod = {"@context": "https://schema.org", "@type": "Product", "name": nome, "sku": sku, "url": url,
-            "offers": {"@type": "Offer", "url": url, "price": f"{prezzo:.2f}", "priceCurrency": "EUR",
+            "offers": ({"@type": "AggregateOffer", "lowPrice": f"{min(opz):.2f}", "highPrice": f"{max(opz):.2f}", "offerCount": len(opz)} if da else {"@type": "Offer", "price": f"{prezzo:.2f}"}) | {"url": url, "priceCurrency": "EUR",
                        "availability": "https://schema.org/" + ("InStock" if disp else "OutOfStock"),
                        "itemCondition": "https://schema.org/" + ("UsedCondition" if p.get("usato") else "NewCondition"),
                        "seller": {"@type": "Organization", "name": "OVERSOUND", "url": SITO + "/"}}}
@@ -109,11 +112,18 @@ def pagina(tpl, p, d, az):
              f'<a href="/"><img src="/icone/logo.webp" alt="OVERSOUND" width="1000" height="198" style="width:220px;height:auto"></a>'
              + (f'<img src="{E(foto[0])}" alt="{E(nome)}" style="display:block;width:100%;max-width:480px;aspect-ratio:1;object-fit:contain;margin:20px 0;background:#f6f6f7;border-radius:16px">' if foto else "")
              + f'<p style="color:#666;margin:16px 0 4px">{E(marca)}</p><h1 style="font-size:28px;margin:0 0 8px">{E(nome)}</h1>'
-             f'<p style="font-size:24px;font-weight:800;margin:0 0 12px">{euro(prezzo)}</p><p>{E(breve)}</p>'
+             f'<p style="font-size:24px;font-weight:800;margin:0 0 12px">{"da " if da else ""}{euro(min(opz) if da else prezzo)}</p><p>{E(breve)}</p>'
              f'<p><a href="/prodotto/{E(slug)}/" style="display:inline-block;background:#e10600;color:#fff;padding:12px 22px;border-radius:99px;text-decoration:none;font-weight:700">Vedi il prodotto</a></p></main></div>')
     t2 = re.sub(r'<div id="root">.*?</div></div>', lambda _: corpo, t, count=1, flags=re.S)
     if t2 == t: raise SystemExit("Non trovo il contenitore del sito in index.html")
     return t2
+
+
+def prezzo_lista(p):
+    """Prezzo nell'elenco della categoria: con le varianti «da X €», mai 0 €."""
+    opz = [float(v.get("prezzo") or 0) for v in ((p.get("opzioni") or {}).get("valori") or []) if isinstance(v, dict)]; opz = [x for x in opz if x > 0]
+    if not opz: return euro(float(p.get("prezzo") or 0))
+    return ("da " if min(opz) != max(opz) else "") + euro(min(opz))
 
 
 def pagina_categoria(tpl, cat, prodotti, az):
@@ -131,7 +141,7 @@ def pagina_categoria(tpl, cat, prodotti, az):
                      (r'<meta property="og:url" content="[^"]*">', f'<meta property="og:url" content="{E(url)}">')): t = re.sub(pat, lambda _, v=val: v, t, count=1)
     t = t.replace('<meta charset="utf-8"><base href="/">', '<meta charset="utf-8"><base href="/">' + f'<script>window.OS_ROUTE={js("/catalogo?cat=" + urllib.parse.quote(cat))}</script>'
                   + f'<script type="application/ld+json">{js(lista)}</script><script type="application/ld+json">{js(bric)}</script>', 1)
-    righe = "".join(f'<li style="margin:6px 0"><a href="/prodotto/{E(p["slug"])}/" style="color:#111">{E(p["nome"])}</a> <b>{euro(float(p.get("prezzo") or 0))}</b></li>' for p in prodotti[:200])
+    righe = "".join(f'<li style="margin:6px 0"><a href="/prodotto/{E(p["slug"])}/" style="color:#111">{E(p["nome"])}</a> <b>{prezzo_lista(p)}</b></li>' for p in prodotti[:200])
     corpo = (f'<div id="root"><main style="max-width:760px;margin:0 auto;padding:24px 16px;font-family:system-ui,sans-serif;color:#111"><a href="/"><img src="/icone/logo.webp" alt="OVERSOUND" width="1000" height="198" style="width:220px;height:auto"></a>'
              f'<h1 style="font-size:28px">{E(cat)}</h1><p>{E(desc)}</p><ul style="padding-left:18px">{righe}</ul></main></div>')
     t2 = re.sub(r'<div id="root">.*?</div></div>', lambda _: corpo, t, count=1, flags=re.S)
