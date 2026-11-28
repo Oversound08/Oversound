@@ -644,6 +644,7 @@ function Grazie({ok,email,nome,tel}){
   <p class="mt-4 text-sm text-zinc-600">Conserva il numero ordine: ti servirà per qualsiasi domanda. Ti abbiamo mandato anche un’email di conferma.</p><a href="/" class="mt-4 inline-block rounded-full bg-brand px-6 py-3 font-semibold text-white">Torna al negozio</a></div>`}
 function Cassa({prod,cart,setCart}){
  const rows=Object.entries(cart).filter(([,q])=>q>0).map(([k,q])=>cartRow(prod,k,q)).filter(r=>r&&r.p),tot=rows.reduce((a,r)=>a+r.p.prezzo*r.q,0),live=!!GESTIONALE.baseUrl;
+ useEffect(()=>{if(rows.length)ecom('begin_checkout',rows.map(r=>r.p),rows.map(r=>r.q))},[]);
  const [d,setD]=useState({nome:'',email:'',tel:'',ind:'',cap:'',citta:'',prov:'',note:'',coupon:'',sito_web:''}),[tok,setTok]=useState(TOKEN.get()),[modo,setModo]=useState('ospite'),[pw,setPw]=useState({p1:'',p2:'',le:'',lp:''}),[lbusy,setLbusy]=useState(false),[pag,setPag]=useState((PAGAM[0]||{}).chiave||'bonifico'),[bdoc,setBdoc]=useState(''),[priv,setPriv]=useState(false),[busy,setBusy]=useState(false),[err,setErr]=useState(''),[ok,setOk]=useState(null),[cons,setCons]=useState(null),[fz,setFz]=useState({si:false,tipo:'',nome:'',cognome:'',cf:'',ragione:'',piva:'',sdi:'',pec:'',stesso:true,ind:'',cap:'',citta:'',prov:''});
  const setF=k=>e=>setFz(f=>({...f,[k]:e.target.type==='checkbox'?e.target.checked:e.target.value}));
  const set=k=>e=>setD({...d,[k]:e.target.value}),inp='w-full rounded-lg border border-zinc-300 bg-white px-3 py-2 text-sm',lab='mb-1 block text-xs font-semibold text-zinc-600';
@@ -937,7 +938,7 @@ function App(){
  const subs=useMemo(()=>prod&&f.cat?[...new Set(prod.filter(p=>p.categoria===f.cat&&p.sub).map(p=>p.sub))].sort((a,b)=>ordCat(a,b,f.cat)):[],[prod,f.cat]),subs2=useMemo(()=>{if(!(prod&&f.cat&&f.sub))return[];const o=(infoCat(f.cat,f.sub).subs2||[]);return[...new Set(prod.filter(p=>p.categoria===f.cat&&p.sub===f.sub&&p.sub2).map(p=>p.sub2))].sort((a,b)=>((o.indexOf(a)+1||1e6)-(o.indexOf(b)+1||1e6))||a.localeCompare(b))},[prod,f.cat,f.sub]);
  const go=patch=>{setF({...f,...patch});vai('/catalogo')};
  const simula=()=>setProd(p=>p.map(x=>x.sku==='CH-002'?{...x,prezzo:699}:x.sku==='TA-002'?{...x,giacenza:5}:x)),
-  onFav=k=>setFavs(a=>a.includes(k)?a.filter(x=>x!==k):[...a,k]),onCart=k=>{const [s0,o0]=String(k).split('##'),p=prod.find(x=>x.sku===s0);if(p&&p.opz&&!o0){vai('/prodotto/'+encodeURIComponent(p.sku));return}const rr=o0?cartRow(prod,k,1):null;setCart(c=>({...c,[k]:Math.min((p||{giacenza:99}).giacenza,(c[k]||0)+1)}));setToast(rr?rr.p.nome:p?p.nome:'Prodotto');clearTimeout(window.__t);window.__t=setTimeout(()=>setToast(null),3500)},onCmp=k=>{const a=cmpR.current;clearTimeout(window.__tc);if(a.includes(k)){setCmp(a.filter(x=>x!==k));setCmpMsg('');return}
+  onFav=k=>setFavs(a=>a.includes(k)?a.filter(x=>x!==k):[...a,k]),onCart=k=>{const [s0,o0]=String(k).split('##'),p=prod.find(x=>x.sku===s0);if(p&&p.opz&&!o0){vai('/prodotto/'+encodeURIComponent(p.sku));return}const rr=o0?cartRow(prod,k,1):null;setCart(c=>({...c,[k]:Math.min((p||{giacenza:99}).giacenza,(c[k]||0)+1)}));ecom('add_to_cart',[rr?rr.p:p],1);setToast(rr?rr.p.nome:p?p.nome:'Prodotto');clearTimeout(window.__t);window.__t=setTimeout(()=>setToast(null),3500)},onCmp=k=>{const a=cmpR.current;clearTimeout(window.__tc);if(a.includes(k)){setCmp(a.filter(x=>x!==k));setCmpMsg('');return}
    if(a.length>=CMP_MAX){setCmpMsg('Puoi confrontare al massimo '+CMP_MAX+' prodotti: togline uno.');window.__tc=setTimeout(()=>setCmpMsg(''),4000);return}setCmp([...a,k]);setCmpMsg('')},sh={favs,onFav,onCart,cmp,onCmp},opzS=p=>p&&p.opz?(p.opz.valori||[]).find(v=>v.id===osel[p.sku])||null:null,addPr=pr=>pr.opz?(opzS(pr)?onCart(pr.sku+'##'+opzS(pr).id):setOsel(o=>({...o,['!'+pr.sku]:1}))):onCart(pr.sku);
  const down=err&&!!GESTIONALE.baseUrl&&!DEMO_MODE,ok=prod&&!down;
  const base=useMemo(()=>{if(!prod)return[];const q=f.q.trim().toLowerCase();return prod.filter(p=>(!f.cat||p.categoria===f.cat)&&(!f.sub||p.sub===f.sub)&&(!f.sub2||p.sub2===f.sub2)&&(!q||(p.nome+' '+p.marca+' '+p.sku).toLowerCase().includes(q)))},[prod,f.cat,f.sub,f.sub2,f.q]);
@@ -952,6 +953,7 @@ function App(){
  const nCart=Object.values(cart).reduce((a,b)=>a+b,0);
  const marche=[...new Set((prod||DEMO).map(p=>p.marca).filter(Boolean))].sort((a,b)=>a.localeCompare(b)),sel='rounded-full border border-zinc-300 bg-white px-3 py-1.5 text-sm';
  const sl=SLIDES.find(x=>x.id===arg),pr=prod&&(prod.find(x=>x.sku===arg)||prod.find(x=>x.slug===arg)),[det,setDet]=useState(null),[fi,setFi]=useState(0);
+ useEffect(()=>{if(page==='prodotto'&&pr)ecom('view_item',[pr],1)},[page,pr&&pr.sku]);
  useEffect(()=>{if(!prod)return;if(page==='prodotto'&&pr&&pr.sku!==arg)return vai('/prodotto/'+encodeURIComponent(pr.sku),true);
   if(page==='prodotto'&&pr&&pr.slug&&location.pathname!=='/prodotto/'+pr.slug+'/')try{history.replaceState({h},'','/prodotto/'+pr.slug+'/'+location.search)}catch(e){}
   if(page==='categoria'){const c=CATS.find(c=>slugCat(c[0])===arg);vai(c?'/catalogo?cat='+encodeURIComponent(c[0]):'/catalogo',true)}},[h,prod]);
@@ -1071,6 +1073,10 @@ const traccia=(ev,d={})=>{if(DEMO_MODE)return;const c=window.osConsenso||{},st=!
  if(typeof window.gtag==='function'){if(acq){gtag('event','purchase',d);if(ADS_CONVERSIONE)gtag('event','conversion',{send_to:ADS_CONVERSIONE,value:d.value,currency:d.currency,transaction_id:d.transaction_id})}else{gtag('event','generate_lead',{method:d.metodo});if(ADS_CONTATTO)gtag('event','conversion',{send_to:ADS_CONTATTO})}}
  else if((st||mk)&&Array.isArray(window.dataLayer))dataLayer.push({event:'os_'+ev,...d});
  if(mk&&typeof window.fbq==='function')fbq('track',acq?'Purchase':'Contact',acq?{value:d.value,currency:d.currency}:{})}catch(e){}};
+/* passi del negozio per Google Analytics/Ads (e Meta solo con consenso marketing): scheda prodotto vista, aggiunta al carrello, cassa aperta. item_id = codice prodotto, uguale a Merchant Center */
+const ecom=(ev,ps,q)=>{if(DEMO_MODE)return;try{const it=(ps||[]).map((p,i)=>p&&({item_id:String(p.sku),item_name:p.nome,price:+p.prezzo||0,quantity:Array.isArray(q)?q[i]||1:q||1})).filter(Boolean);if(!it.length)return;const v=+it.reduce((a,x)=>a+x.price*x.quantity,0).toFixed(2);
+ if(typeof window.gtag==='function')gtag('event',ev,{currency:'EUR',value:v,items:it});const c=window.osConsenso||{};
+ if(c.marketing&&typeof window.fbq==='function')fbq('track',{view_item:'ViewContent',add_to_cart:'AddToCart',begin_checkout:'InitiateCheckout'}[ev],{value:v,currency:'EUR',content_ids:it.map(x=>x.item_id),content_type:'product'})}catch(e){}};
 const acquisto=(num,tot,righe)=>{if(!num)return;try{const f=JSON.parse(localStorage.getItem('os-conv')||'[]');if(f.includes(String(num)))return;localStorage.setItem('os-conv',JSON.stringify([String(num),...f].slice(0,30)))}catch(e){}
  traccia('acquisto',{transaction_id:String(num),value:+(+tot||0).toFixed(2),currency:'EUR',items:righe||[]})};
 document.addEventListener('click',e=>{if(e.defaultPrevented||e.ctrlKey||e.metaKey||e.shiftKey||e.altKey||e.button)return;const a=e.target.closest&&e.target.closest('a[href]');if(!a)return;const t=a.getAttribute('href')||'';
