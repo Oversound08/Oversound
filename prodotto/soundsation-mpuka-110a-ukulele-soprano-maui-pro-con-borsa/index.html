@@ -227,6 +227,9 @@ html.splash-on,html.splash-on body{overflow:hidden}
 /* aggiornamento 53: account alla cassa, ordini nell'account, prodotti gratis */
 .os-f-tutta{grid-column:1/-1}.os-scelte{display:flex;flex-wrap:wrap;gap:.5rem}.os-scelta{border:1px solid #d4d4d8;border-radius:9999px;padding:.4rem .9rem;font-size:.875rem;font-weight:600;background:#fff}.os-scelta.os-on{background:#e10600;border-color:#e10600;color:#fff}
 .os-passi{display:flex;gap:.25rem;margin:.5rem 0 .25rem;padding:0;list-style:none;font-size:.7rem;color:#71717a}.os-passi li{flex:1;text-align:center;padding-top:.35rem;border-top:3px solid #e4e4e7}.os-passi li.os-fatto{border-top-color:#e10600;color:#18181b;font-weight:600}
+/* aggiornamento 70: il viaggio del pacco dal tracking del corriere */
+.os-trk{margin-top:.5rem;border:1px solid #e4e4e7;border-radius:.75rem;padding:.6rem .75rem;background:#fafafa}.os-trk-ult{display:flex;gap:.5rem;align-items:flex-start}.os-trk-ult b{display:block;color:#18181b}.os-trk-pt{flex:0 0 .7rem;height:.7rem;margin-top:.3rem;border-radius:50%;background:#e10600;box-shadow:0 0 0 4px rgba(225,6,0,.15)}.os-trk-ok .os-trk-pt{background:#15803d;box-shadow:0 0 0 4px rgba(21,128,61,.15)}
+.os-trk-btn{margin-top:.35rem;font-size:.75rem;font-weight:600;color:#e10600;text-decoration:underline}.os-trk-lista{list-style:none;margin:.5rem 0 0 .3rem;padding:0 0 0 .9rem;border-left:2px solid #e4e4e7}.os-trk-lista li{position:relative;padding:0 0 .55rem;font-size:.78rem;color:#3f3f46}.os-trk-lista li::before{content:"";position:absolute;left:-1.27rem;top:.3rem;width:.6rem;height:.6rem;border-radius:50%;background:#d4d4d8;border:2px solid #fafafa}.os-trk-lista li:first-child::before{background:#e10600}.os-trk-lista small{display:block;color:#71717a}
 .os-rec{font-weight:600;color:#e10600;white-space:nowrap}.os-rec:hover{text-decoration:underline}
 .os-gratis{width:fit-content;border-radius:.75rem;background:#fef3c7;color:#92400e;padding:.4rem .8rem;font-size:.875rem;font-weight:600}
 
@@ -849,6 +852,7 @@ function OrdineAcc({o,t,agg}){
   <p class="text-zinc-600">${new Date(o.data).toLocaleDateString('it-IT')} · <span class="font-semibold">${o.stato==='Da pagare'?'In attesa di pagamento':o.stato==='Da spedire'?'In preparazione':o.stato}</span>${o.pagamento?' · '+o.pagamento:''}</p>
   ${!chiuso&&n!=null&&html`<ol class="os-passi" aria-label="Stato dell’ordine">${PASSI.map((x,i)=>html`<li key=${x} class=${i<=n?'os-fatto':''}>${x}</li>`)}</ol>`}
   ${o.tracking&&html`<p class="mt-1">Spedizione: ${o.link_tracking?html`<a href=${o.link_tracking} target="_blank" rel="noreferrer" class="font-semibold text-brand underline">${o.tracking}</a>`:o.tracking}</p>`}
+  ${o.traccia&&html`<${Viaggio} v=${o.traccia}/>`}
   ${o.rimborsato>0&&html`<p class="mt-1 text-green-800">Rimborsati ${eur(+o.rimborsato)}</p>`}
   <ul class="mt-2 space-y-1">${o.righe.map(r=>html`<li key=${r.codice+r.nome} class="flex flex-wrap items-center justify-between gap-2 text-xs text-zinc-600"><span>${r.quantita} × ${r.nome}</span>${o.recensibile&&r.codice&&html`<a href=${'/prodotto/'+encodeURIComponent(r.codice)+'?recensione=1'} class="os-rec">★ Lascia una recensione</a>`}</li>`)}</ul>
   ${o.reso&&html`<p class="mt-2 rounded-lg bg-zinc-50 p-2 text-xs"><strong>Reso: ${o.reso.stato==='Richiesto'?'richiesta inviata, ti rispondiamo presto':o.reso.stato==='Accettato'?'accettato':o.reso.stato==='Rifiutato'?'non accettato':'rimborsato'}</strong>${o.reso.risposta&&html`<span class="block whitespace-pre-line text-zinc-600">${o.reso.risposta}</span>`}</p>`}
@@ -856,6 +860,13 @@ function OrdineAcc({o,t,agg}){
   ${apri&&html`<div class="mt-2 space-y-2 rounded-lg border border-zinc-200 p-3"><p class="text-xs text-zinc-600">Hai 14 giorni dalla consegna per il recesso (<a href="/info/resi" target="_blank" class="underline">come funziona il reso</a>). Quali prodotti vuoi rendere?</p>${o.righe.map(r=>html`<label key=${'r'+r.codice} class="flex items-center gap-2 text-xs"><input type="checkbox" checked=${sel.includes(r.codice)} onChange=${e=>setSel(e.target.checked?[...sel,r.codice]:sel.filter(x=>x!==r.codice))}/>${r.nome}</label>`)}
    <textarea class="w-full rounded-lg border border-zinc-300 bg-white px-3 py-2 text-sm" rows="2" placeholder="Motivo del reso" value=${mot} onInput=${e=>setMot(e.target.value)}></textarea>${st&&html`<p class="text-xs text-brand">${st}</p>`}
    <div class="flex gap-2"><button disabled=${busy} onClick=${invia} class="rounded-full bg-brand px-4 py-2 text-xs font-semibold text-white disabled:bg-zinc-300">${busy?'Invio…':'Invia la richiesta'}</button><button onClick=${()=>setApri(false)} class="rounded-full border border-zinc-300 px-4 py-2 text-xs font-semibold">Annulla</button></div></div>`}</li>`}
+/* aggiornamento 70: dove si trova il pacco, con la cronologia del corriere */
+const quandoIt=q=>{if(!q)return '';const d=new Date(q.replace(' ','T'));return isNaN(d)?q:d.toLocaleString('it-IT',{day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'})};
+function Viaggio({v}){
+ const [apri,setApri]=useState(false),ev=v.eventi||[];
+ return html`<div class=${'os-trk'+(v.consegnato?' os-trk-ok':'')} aria-live="polite"><div class="os-trk-ult"><span class="os-trk-pt" aria-hidden="true"></span><div class="min-w-0"><b>${v.consegnato?'Consegnato':'Dove si trova il tuo pacco'}</b><span>${v.stato}</span>${(v.luogo||v.quando)&&html`<span class="block text-xs text-zinc-500">${[v.luogo,quandoIt(v.quando)].filter(Boolean).join(' · ')}</span>`}</div></div>
+  ${ev.length>1&&html`<button onClick=${()=>setApri(!apri)} class="os-trk-btn" aria-expanded=${apri}>${apri?'Nascondi il viaggio':'Vedi tutto il viaggio ('+ev.length+' passaggi)'}</button>`}
+  ${apri&&html`<ol class="os-trk-lista">${ev.map((e,i)=>html`<li key=${i}>${e.stato}<small>${[quandoIt(e.quando),e.luogo].filter(Boolean).join(' · ')}</small></li>`)}</ol>`}</div>`}
 function Profilo({p,ind,inp,lab,btn,busy,salva,cambiaPw}){
  const [x,setX]=useState({nome:p.nome||'',tel:p.tel||'',cf:p.cf||'',newsletter:!!p.newsletter,ind:ind.ind||'',cap:ind.cap||'',citta:ind.citta||'',prov:ind.prov||''}),[pw,setPw]=useState({vecchia:'',nuova:''});
  const s=k=>e=>setX({...x,[k]:e.target.type==='checkbox'?e.target.checked:e.target.value});
